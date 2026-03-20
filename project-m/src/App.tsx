@@ -1,29 +1,24 @@
 import { useState, useEffect } from "react";
 import API from "./api";
+import { Routes, Route } from "react-router-dom";
+import HomePage from "./pages/Home";
+import Signup from "./auth/Signup";
+import Login from "./auth/Login";
+import Features from "./pages/Features";
+import About from "./pages/About";
 
 function App() {
-  const [projects, setProjects] = useState([])
 
-  useEffect(()=>{
-    API.get('projects/')
-    .then((res) =>{
-      setProjects(res.data)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-  }, [])
   return (
-    <div className="p-10">
-      <div className="bg-red-500 text-white text-3xl p-10">
-      Tailwind Test
-    </div>
-      <h1 className="text-2xl font-bold mb-4">Projects</h1>
-      {projects.map((p:any)=>(
-        <div key={p.id} className="p-4 mb-2 bg-gray-800 text-white rounded">
-          {p.name}
-        </div>
-      ))}
+    <div className="p-10 ">
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path='/signup' element={<Signup />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/features' element={<Features />} />
+        <Route path="/about" element={<About />} />
+      </Routes>
     </div>
   );
 }

@@ -1,23 +1,66 @@
 import { useState } from "react";
+import { NavLink } from "react-router-dom";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
+  const baseClass = "text-white cursor-pointer";
+  const activeClass = "underline underline-offset-4 font-semibold";
+
   return (
     <>
       {/* Navbar */}
-      <nav className="flex justify-between items-center bg-blue-500 p-4">
+      <nav className="fixed top-0 left-0 w-full bg-blue-600 px-6 py-4 flex justify-between items-center z-50 shadow-md mb-lg-5">
         <h1 className="text-white text-xl font-semibold">
           Project Management
         </h1>
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex gap-4">
-          <li className="text-white">Home</li>
-          <li className="text-white">About</li>
-          <li className="text-white">Login</li>
-          <li className="text-white">Signup</li>
-          <li className="text-white">Logout</li>
+          <NavLink
+          to="/"
+          className={({ isActive }) =>
+            `${baseClass} ${isActive ? activeClass : ""}`
+          }
+        >
+          Home
+        </NavLink>
+
+        <NavLink
+          to="/features"
+          className={({ isActive }) =>
+            `${baseClass} ${isActive ? activeClass : ""}`
+          }
+        >
+          Features
+        </NavLink>
+
+        <NavLink
+          to="/signup"
+          className={({ isActive }) =>
+            `${baseClass} ${isActive ? activeClass : ""}`
+          }
+        >
+          Signup
+        </NavLink>
+
+        <NavLink
+          to="/login"
+          className={({ isActive }) =>
+            `${baseClass} ${isActive ? activeClass : ""}`
+          }
+        >
+          Login
+        </NavLink>
+
+        <NavLink
+          to="/about"
+          className={({ isActive }) =>
+            `${baseClass} ${isActive ? activeClass : ""}`
+          }
+        >
+          About
+        </NavLink>
         </ul>
 
         {/* Mobile Button */}
