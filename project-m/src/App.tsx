@@ -1,11 +1,14 @@
-import './App.css'
+// import './App.css'
 
 function App() {
   return (
-    <>
-      <h1>welcome to the project management.</h1>
-    </>
-  )
+    <div className="h-screen flex items-center justify-center bg-black">
+      <h1 className="text-4xl text-green-400 font-bold">
+        Tailwind Working 🚀
+      </h1>
+    </div>
+  );
 }
+
 
 export default App

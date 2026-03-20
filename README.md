@@ -164,3 +164,10 @@ This project is open-source and available under the MIT License.
 * Portfolio: Coming Soon 🚀
 
 ---
+
+
+# Installing Taiwlwind CSS
+```
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+```
