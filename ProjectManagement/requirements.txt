@@ -1,1 +1,4 @@
 ipykernel
+django
+djangorestframework
+django-cors-headers
