@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4" style="user-select: none; -webkit-user-select: none; -moz-user-select: none;">
+  <div class="row g-3">
+    <!-- Top stats -->
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Hello, {{ request.user.first_name|default:request.user.username }}</h3>
+        <div>
+          <a href="#" class="btn btn-sm btn-primary"><i class="fa fa-plus me-1"></i> New Project</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-3">
+      <div class="card p-3 stat-card">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h6 class="mb-1">Active Projects</h6>
+            <h4 class="mb-0">{{ stats.active_projects|default:0 }}</h4>
+          </div>
+          <div class="text-end">
+            <i class="fa fa-folder-open fa-2x text-muted"></i>
+          </div>
+        </div>
+        <small class="text-muted">Updated {{ stats.updated_at|default:"now" }}</small>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-3">
+      <div class="card p-3 stat-card">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h6 class="mb-1">Open Tasks</h6>
+            <h4 class="mb-0">{{ stats.open_tasks|default:0 }}</h4>
+          </div>
+          <div class="text-end">
+            <i class="fa fa-tasks fa-2x text-muted"></i>
+          </div>
+        </div>
+        <small class="text-muted">Across all projects</small>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-3">
+      <div class="card p-3 stat-card">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h6 class="mb-1">Members</h6>
+            <h4 class="mb-0">{{ stats.members|default:0 }}</h4>
+          </div>
+          <div class="text-end">
+            <i class="fa fa-users fa-2x text-muted"></i>
+          </div>
+        </div>
+        <small class="text-muted">Active this month</small>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-3">
+      <div class="card p-3 stat-card">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h6 class="mb-1">Overdue</h6>
+            <h4 class="mb-0 text-danger">{{ stats.overdue|default:0 }}</h4>
+          </div>
+          <div class="text-end">
+            <i class="fa fa-exclamation-triangle fa-2x text-muted"></i>
+          </div>
+        </div>
+        <small class="text-muted">Needs attention</small>
+      </div>
+    </div>
+
+    <!-- Projects table / list -->
+    <div class="col-12 col-lg-6">
+      <div class="card p-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5 class="mb-0">Projects</h5>
+          <a href="#" class="small">View all</a>
+        </div>
+
+        {% if projects %}
+        <div class="list-group">
+          {% for project in projects|slice:":6" %}
+          <div class="list-group-item project-row d-flex justify-content-between align-items-center">
+            <div>
+              <a href="#" class="h6 mb-0 d-block">{{ project.name }}</a>
+              <small class="text-muted">{{ project.description|truncatechars:80 }}</small>
+            </div>
+            <div style="min-width:220px;">
+              <div class="mb-1 small text-muted">Progress</div>
+              <div class="progress progress-small">
+                <div class="progress-bar" role="progressbar" style="width: {{ project.progress|default:0 }}%" aria-valuenow="{{ project.progress|default:0 }}" aria-valuemin="0" aria-valuemax="100">{{ project.progress|default:0 }}%</div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+          <p class="mb-2">No projects yet. Create your first project to get started.</p>
+          <a href="#" class="btn btn-outline-primary btn-sm">Create Project</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Kanban / Tasks -->
+    <div class="col-12 col-lg-6">
+      <div class="card p-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5 class="mb-0">Board</h5>
+          <div class="small text-muted">Drag & drop tasks between columns</div>
+        </div>
+        <div class="row g-2">
+          {% comment %} Expecting `kanban` to be a mapping like {'todo': [...], 'in_progress': [...], 'done': [...]} {% endcomment %}
+          {% for column_key, column_items in kanban.items %}
+          <div class="col-4">
+            <div class="kanban-column">
+              <h6 class="mb-2 text-capitalize">{{ column_key }}</h6>
+              {% for task in column_items %}
+              <div class="kanban-card">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <strong>{{ task.title }}</strong>
+                    <div class="small text-muted">\{\{ task.assignee.username if task.assignee else 'Unassigned' \}\}</div>
+                  </div>
+                  <div class="small text-end">
+                    <span class="badge bg-light text-dark">{{ task.priority|default:'N' }}</span>
+                  </div>
+                </div>
+                <div class="mt-2 small text-muted">Due: {{ task.due_date|date:"M j, Y" }}</div>
+              </div>
+              {% empty %}
+              <div class="small text-muted">No tasks</div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity / Notifications -->
+    <div class="col-12 col-lg-4">
+      <div class="card p-3">
+        <h6>Recent Activity</h6>
+        <ul class="list-unstyled">
+          {% for note in notifications|slice:":8" %}
+          <li class="py-2 border-bottom">
+            <div class="small text-muted">{{ note.timestamp|timesince }} ago</div>
+            <div>{{ note.message }}</div>
+          </li>
+          {% empty %}
+          <li class="py-3 text-center text-muted">No activity yet</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-8">
+      <div class="card p-3">
+        <h6 class="mb-3">Progress overview</h6>
+        <canvas id="overviewChart" height="90"></canvas>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<!-- Chart.js CDN (optional) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  // disable text selection via JS as a fallback
+  document.addEventListener('DOMContentLoaded', function(){
+    document.body.style.userSelect = 'none';
+  });
+
+  // Simple chart if `chart_data` provided in context
+  (function(){
+    const ctx = document.getElementById('overviewChart');
+    if(!ctx) return;
+    const data = {{ chart_data|default:"null"|safe }};
+    if(!data) return;
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: data.labels,
+        datasets: [{
+          label: data.label || 'Progress',
+          data: data.values || [],
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: {responsive:true, maintainAspectRatio:false}
+    });
+  })();
+</script>
+{% endblock %}

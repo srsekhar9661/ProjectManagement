@@ -1,0 +1,56 @@
+# environment files
+
+*.log
+*.temp
+*.env
+
+# fronted project project-m
+
+# build outputs
+project-m/dist/
+project-m/build/
+project-m/out/
+
+# Cache
+project-m/.cache/
+project-m/eslintcache
+project-m/.vite/ 
+
+
+# BACKEND  - ProjectManagement/ (Django/Python)
+# python cache
+ProjectManagement/__pycache__/# Python cache
+ProjectManagement/__pycache__/
+ProjectManagement/*.pyc
+ProjectManagement/*.pyo
+ProjectManagement/*.pyd
+ProjectManagement/.Python
+ProjectManagement/**/__pycache__/  # All subdirectories
+
+# Database
+ProjectManagement/db.sqlite3
+ProjectManagement/*.sqlite3
+ProjectManagement/*.db
+
+# Django specific
+ProjectManagement/staticfiles/
+ProjectManagement/media/
+ProjectManagement/static/
+ProjectManagement/media/
+ProjectManagement/*/migrations/  # Usually you keep migrations
+# But if you want to ignore migrations:
+# ProjectManagement/*/migrations/*.py
+# !ProjectManagement/*/migrations/__init__.py
+
+
+
+# IDE settings specific to Python
+ProjectManagement/.python-version
+ProjectManagement/.venv
+
+# Logs
+ProjectManagement/logs/
+ProjectManagement/*.log
+
+
+
