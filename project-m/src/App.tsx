@@ -1,11 +1,26 @@
-// import './App.css'
+import { useState, useEffect } from "react";
+import API from "./api";
 
 function App() {
+  const [projects, setProjects] = useState([])
+
+  useEffect(()=>{
+    API.get('projects/')
+    .then((res) =>{
+      setProjects(res.data)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }, [])
   return (
-    <div className="h-screen flex items-center justify-center bg-black">
-      <h1 className="text-4xl text-green-400 font-bold">
-        Tailwind Working 🚀
-      </h1>
+    <div className="p-10">
+      <h1 className="text-2xl font-bold mb-4">Projects</h1>
+      {projects.map((p:any)=>(
+        <div key={p.id} className="p-4 mb-2 bg-gray-800 text-white rounded">
+          {p.name}
+        </div>
+      ))}
     </div>
   );
 }
