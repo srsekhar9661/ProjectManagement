@@ -14,13 +14,8 @@ function App() {
     })
   }, [])
   return (
-    <div className="p-10">
-      <h1 className="text-2xl font-bold mb-4">Projects</h1>
-      {projects.map((p:any)=>(
-        <div key={p.id} className="p-4 mb-2 bg-gray-800 text-white rounded">
-          {p.name}
-        </div>
-      ))}
+    <div className="bg-green-500 text-white text-4xl p-10">
+      Tailwind Working 🚀
     </div>
   );
 }
