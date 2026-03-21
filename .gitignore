@@ -27,6 +27,9 @@ ProjectManagement/*.pyd
 ProjectManagement/.Python
 ProjectManagement/**/__pycache__/  # All subdirectories
 
+*.pyc
+__pycache__/
+
 # Database
 ProjectManagement/db.sqlite3
 ProjectManagement/*.sqlite3
