@@ -13,4 +13,7 @@ urlpatterns = [
     path('token/', TokenObtainPairView.as_view()),
     path('token/refresh/', TokenRefreshView.as_view()),
     path('projects/<int:id>/', v.get_project_detail),
+    path('projects/<int:project_id>/tasks/', v.get_tasks),
+    path('projects/<int:project_id>/tasks/create/', v.create_task),
+    path('projects/<int:id>/', v.delete_project),
 ]

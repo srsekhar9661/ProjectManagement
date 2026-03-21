@@ -7,7 +7,7 @@ import Login from "./auth/Login";
 import Features from "./pages/Features";
 import About from "./pages/About";
 import DashboardLayout from "./pages/Dashboard/DashboardLayout";
-import DashboardHome from "./pages/Dashboard/DashboatdHome";
+import DashboardHome from "./pages/Dashboard/DashboardHome";
 import Projects from "./pages/Dashboard/Projects";
 import CreateProject from "./pages/Dashboard/CreateProject";
 import ProtectedRoute from "./components/ProtectedRoute";

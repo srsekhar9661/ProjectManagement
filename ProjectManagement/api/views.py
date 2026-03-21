@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view, permission_classes
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from api.models import Project
+from api.models import Project, ProjectMembership, Task
 from api.serializers import ProjectSerializer, UserSerializer, LoginSerializer
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -55,3 +55,55 @@ def get_project_detail(request, id):
     project = get_object_or_404(Project, id=id, created_by=request.user)
     serializer = ProjectSerializer(project)
     return Response(serializer.data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_member(request, project_id):
+    user_id = request.data.get('user_id')
+    membership, created = ProjectMembership.objects.get_or_create(
+        user_id=user_id,
+        project_id=project_id
+    )
+    return Response({'message':'User added to project'})
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_task(request, project_id):
+    data = request.data
+    task = Task.objects.create(
+        title=data['title'],
+        description=data['description'],
+        project_id=project_id,
+        # assigned_to_id=data.get('assigned_to')
+    )
+    return Response({'message':'Task created'})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_tasks(request, project_id):
+    tasks = Task.objects.filter(project_id=project_id)
+    data = [
+        {
+            "id": t.id,
+            "title": t.title,
+            'description':t.description,
+            "status": t.status,
+            # "assigned_to": t.assigned_to.username if t.assigned_to else None
+        }
+        for t in tasks
+    ]
+    return Response(data)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_project(request, id):
+    project = Project.objects.filter(id=id, created_by=request.user).first()
+
+    if not project:
+        return Response({"error": "Not found"}, status=404)
+
+    project.delete()
+    return Response({"message": "Deleted successfully"})
