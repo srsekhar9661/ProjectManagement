@@ -4,6 +4,7 @@ from .models import Project
 from api.serializers import ProjectSerializer, UserSerializer, LoginSerializer
 from rest_framework import status
 
+
 @api_view(['GET'])
 def get_projects(request):
     projects = Project.objects.all()
@@ -23,9 +24,13 @@ def signup(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# @api_view(['GET'])
-# def login(request):
-#     serializer = LoginSerializer(data = request.data)
-#     if serializer.is_valid():
-#         pass
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['POST'])
+def login(request):
+    serializer = LoginSerializer(data = request.data)
+    if serializer.is_valid():
+        user = serializer.validated_data['user']
+        return Response({
+            'message':'Login successful',
+            'username':user.username,
+        }, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

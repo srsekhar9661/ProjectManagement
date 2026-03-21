@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 type Project = {
   id: number;
   name: string;
@@ -8,6 +10,16 @@ type Props = {
 };
 
 export default function HomePage({ projects = [] }: Props) {
+    const storedUser = localStorage.getItem('user')
+    const user = storedUser ? JSON.parse(storedUser) : null
+
+    const navigate = useNavigate()
+
+
+    const handleSignIn = () => {
+        navigate('/login')
+    }
+    
   return (
     <div className="bg-gray-50 min-h-screen">
       
@@ -25,9 +37,12 @@ export default function HomePage({ projects = [] }: Props) {
             all from a single workspace.
           </p>
 
-          <button className="mt-6 px-6 py-3 border border-gray-400 rounded-md text-gray-700 hover:bg-gray-100">
+            {!user && 
+            
+          <button onClick={handleSignIn} className="my-3 px-6 py-3 border border-gray-400 rounded-md text-gray-700 hover:bg-gray-100">
             Sign In
           </button>
+            }
 
           <div className="flex gap-6 mt-6 text-sm text-gray-500">
             <span>Team collaboration</span>

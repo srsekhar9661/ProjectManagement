@@ -6,6 +6,7 @@ import Signup from "./auth/Signup";
 import Login from "./auth/Login";
 import Features from "./pages/Features";
 import About from "./pages/About";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
 
@@ -18,6 +19,7 @@ function App() {
         <Route path='/login' element={<Login />} />
         <Route path='/features' element={<Features />} />
         <Route path="/about" element={<About />} />
+        <Route path='/dashboard' element={<Dashboard />} />
       </Routes>
     </div>
   );

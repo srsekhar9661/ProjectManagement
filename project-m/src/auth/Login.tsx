@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import API from "../api";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
+  const navigate = useNavigate()
+  const [error, setError] = useState('')
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -14,9 +18,25 @@ export default function Login() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Login Data:", formData);
+    try {
+        const res = await API.post('login/', {
+            username:formData.username,
+            password:formData.password
+        })
+
+        console.log('Login is successful')
+        console.log(res.data)
+
+        localStorage.setItem('user', JSON.stringify(res.data))
+
+        navigate('/')
+    } catch (err:any) {
+        console.log(err.response?.data)
+        setError('Invalid credentials.')
+    }
   };
 
   return (
@@ -49,6 +69,7 @@ export default function Login() {
           <h2 className="text-xl font-semibold text-center mb-6">
             Login
           </h2>
+          {error && <p className="text-red-500 text-center">{error}</p> }
 
           <form onSubmit={handleSubmit} className="space-y-5">
             

@@ -11,6 +11,7 @@ export default function Signup() {
     confirmPassword: "",
     company: "",
   });
+  const [error, setError] = useState('')
 
   const navigate = useNavigate()
 
@@ -43,6 +44,7 @@ export default function Signup() {
         console.log(error.response?.data)
 
         alert('Error : ' + JSON.stringify(error.response?.data))
+        setError('Signup failed')
     }
   };
 
@@ -76,7 +78,7 @@ export default function Signup() {
           <h2 className="text-xl font-semibold text-center mb-6">
             Sign Up
           </h2>
-
+            {error && <p className="text-red-500">{error}</p> }
           <form onSubmit={handleSubmit} className="space-y-4">
             
             {/* Email */}

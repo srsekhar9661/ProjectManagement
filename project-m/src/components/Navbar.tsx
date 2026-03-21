@@ -1,8 +1,18 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const storedUser = localStorage.getItem('user')
+  const user = storedUser ? JSON.parse(storedUser) : null
+//   const user = JSON.parse(localStorage.getItem('user') || '')
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem("user");
+        navigate("/login");
+        };
 
   const baseClass = "text-white cursor-pointer";
   const activeClass = "underline underline-offset-4 font-semibold";
@@ -44,23 +54,41 @@ export default function Navbar() {
           About
         </NavLink>
 
-        <NavLink
-          to="/signup"
+          {user ?  
+          <>
+          <NavLink 
+          to='/dashboard'
           className={({ isActive }) =>
-            `${baseClass} ${isActive ? activeClass : ""}`
-          }
-        >
-          Signup
-        </NavLink>
+                `${baseClass} ${isActive ? activeClass : ""}`
+            }
+          >
+            Dashboard
+          </NavLink>
+          <li onClick={handleLogout} className="cursor-pointer hover:text-whitesmoke hover:rounded hover:px-1 hover:bg-gray-100">
+            Logout
+            </li>
+          </>
+          :
+          <>
+            <NavLink
+            to="/signup"
+            className={({ isActive }) =>
+                `${baseClass} ${isActive ? activeClass : ""}`
+            }
+            >
+            Signup
+            </NavLink>
 
-        <NavLink
-          to="/login"
-          className={({ isActive }) =>
-            `${baseClass} ${isActive ? activeClass : ""}`
+            <NavLink
+            to="/login"
+            className={({ isActive }) =>
+                `${baseClass} ${isActive ? activeClass : ""}`
+            }
+            >
+            Login
+            </NavLink>
+          </>
           }
-        >
-          Login
-        </NavLink>
 
         </ul>
 
