@@ -11,6 +11,7 @@ import DashboardHome from "./pages/Dashboard/DashboatdHome";
 import Projects from "./pages/Dashboard/Projects";
 import CreateProject from "./pages/Dashboard/CreateProject";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ProjectDetails from "./pages/Dashboard/ProjectDetails";
 
 function App() {
 
@@ -31,6 +32,7 @@ function App() {
             <Route index element={<DashboardHome />} />
             <Route path='projects' element={<Projects />} />
             <Route path="create" element={<CreateProject />} />
+            <Route path="projects/:id" element={<ProjectDetails />} />
         </Route>
       </Routes>
     </div>

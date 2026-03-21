@@ -12,4 +12,5 @@ urlpatterns = [
     path('projects/create/', v.create_project),
     path('token/', TokenObtainPairView.as_view()),
     path('token/refresh/', TokenRefreshView.as_view()),
+    path('projects/<int:id>/', v.get_project_detail),
 ]

@@ -11,6 +11,7 @@ type Project = {
 export default function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
   const navigate = useNavigate();
+  
 
   useEffect(() => {
     API.get("projects/")

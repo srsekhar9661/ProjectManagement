@@ -1,18 +1,16 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://127.0.0.1:8000/api/",
-});
+    baseURL: 'http://127.0.0.1:8000/api/',
+})
 
-// 🔥 Add token automatically
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("access");
+// Add token automatically
+API.interceptors.request.use((config)=>{
+    const token = localStorage.getItem('access')
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+})
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-
-  return config;
-});
-
-export default API;
+export default API
