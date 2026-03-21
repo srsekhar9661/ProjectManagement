@@ -20,24 +20,25 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login Data:", formData);
+
     try {
-        const res = await API.post('login/', {
-            username:formData.username,
-            password:formData.password
-        })
+        const res = await API.post("token/", {
+        username: formData.username,
+        password: formData.password,
+        });
 
-        console.log('Login is successful')
-        console.log(res.data)
+        // store tokens
+        localStorage.setItem("access", res.data.access);
+        localStorage.setItem("refresh", res.data.refresh);
 
-        localStorage.setItem('user', JSON.stringify(res.data))
+        alert("Login successful 🎉");
 
-        navigate('/')
-    } catch (err:any) {
-        console.log(err.response?.data)
-        setError('Invalid credentials.')
+        navigate("/dashboard");
+
+    } catch (err) {
+        alert("Invalid credentials ❌");
     }
-  };
+    };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6">

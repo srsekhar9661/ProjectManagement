@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Project
+from api.models import Project
 from django.contrib.auth.models import User
 from api.models import Profile
 from django.contrib.auth import authenticate
@@ -8,6 +8,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = '__all__'
+        read_only_fields = ['created_by']
 
 
 class UserSerializer(serializers.Serializer):

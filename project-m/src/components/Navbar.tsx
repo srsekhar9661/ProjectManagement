@@ -4,13 +4,15 @@ import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const storedUser = localStorage.getItem('user')
-  const user = storedUser ? JSON.parse(storedUser) : null
+  const token = localStorage.getItem('access')
+//   const storedUser = localStorage.getItem('user')
+//   const user = storedUser ? JSON.parse(storedUser) : null
 //   const user = JSON.parse(localStorage.getItem('user') || '')
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        localStorage.removeItem("user");
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
         navigate("/login");
         };
 
@@ -54,7 +56,7 @@ export default function Navbar() {
           About
         </NavLink>
 
-          {user ?  
+          {token ?  
           <>
           <NavLink 
           to='/dashboard'
