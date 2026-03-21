@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import API from "../api";
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -9,6 +12,8 @@ export default function Signup() {
     company: "",
   });
 
+  const navigate = useNavigate()
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -16,9 +21,29 @@ export default function Signup() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
+    // alert(formData);
+    try {
+        const res = await API.post('signup/', {
+            username: formData.username,
+            email:formData.email,
+            password:formData.password,
+            confirm_password:formData.confirmPassword,
+            organization:formData.company
+        })
+
+        console.log(res.data)
+        alert('Signup successful')
+
+        // navigating to the login
+        navigate('/login')
+
+    } catch (error:any) {
+        console.log(error.response?.data)
+
+        alert('Error : ' + JSON.stringify(error.response?.data))
+    }
   };
 
   return (
@@ -128,6 +153,7 @@ export default function Signup() {
             >
               Sign Up
             </button>
+            <div className="text-sm  text-center text-gray-500">Already have an account? <Link to='/login' className="font-bold text-blue-500  hover:underline">Click here to login</Link></div>
           </form>
         </div>
       </div>

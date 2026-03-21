@@ -34,6 +34,15 @@ export default function Navbar() {
         >
           Features
         </NavLink>
+        
+        <NavLink
+          to="/about"
+          className={({ isActive }) =>
+            `${baseClass} ${isActive ? activeClass : ""}`
+          }
+        >
+          About
+        </NavLink>
 
         <NavLink
           to="/signup"
@@ -53,14 +62,6 @@ export default function Navbar() {
           Login
         </NavLink>
 
-        <NavLink
-          to="/about"
-          className={({ isActive }) =>
-            `${baseClass} ${isActive ? activeClass : ""}`
-          }
-        >
-          About
-        </NavLink>
         </ul>
 
         {/* Mobile Button */}

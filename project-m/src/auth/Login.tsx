@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -100,9 +101,9 @@ export default function Login() {
             {/* Signup Redirect */}
             <p className="text-center text-sm text-gray-600">
               Don’t have an account?{" "}
-              <span className="text-blue-600 cursor-pointer hover:underline">
+              <Link to='/signup' className="text-blue-600 cursor-pointer hover:underline">
                 Sign up
-              </span>
+              </Link>
             </p>
           </form>
         </div>
