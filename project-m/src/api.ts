@@ -1,4 +1,4 @@
-import { Config } from './../node_modules/@eslint/config-helpers/dist/esm/index.d';
+// import { Config } from './../node_modules/@eslint/config-helpers/dist/esm/index.d';
 import axios from "axios";
 
 const API = axios.create({
