@@ -107,3 +107,22 @@ def delete_project(request, id):
 
     project.delete()
     return Response({"message": "Deleted successfully"})
+
+
+from api.serializers import UserSerializer, TaskSerializer
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_info(request):
+    data = UserSerializer(request.user)
+    return Response(data.data, status=200)
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_tasks(request):
+    tasks = Task.objects.filter(
+        project__created_by=request.user
+    )
+    print(f'Tasks {tasks}')
+    serializer = TaskSerializer(tasks, many=True)
+    return Response(serializer.data, status=200)

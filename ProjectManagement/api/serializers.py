@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from api.models import Project
+from api.models import Project, Task
 from django.contrib.auth.models import User
 from api.models import Profile
 from django.contrib.auth import authenticate
@@ -60,3 +60,16 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError('Invalid username or password')
         data['user'] = user
         return data
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
+
+
+class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = '__all__'
+

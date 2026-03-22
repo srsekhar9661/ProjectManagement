@@ -18,7 +18,9 @@ API.interceptors.request.use((config)=>{
 API.interceptors.response.use(
     (response) => response,
     async (error) => {
-        const originalRequest = error.Config
+        console.log(`Error ; ${error.config}`)
+        const originalRequest = error.config
+        console.log(`originalRwquest : ${originalRequest}`)
         if (
             error.response?.status === 401 && 
             !originalRequest._retry
