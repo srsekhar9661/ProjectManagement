@@ -5,6 +5,9 @@ This application allows users to create projects, manage tasks, and collaborate 
 
 ---
 
+## 🥅 Aim
+* My aim is to create a **Project Management** Tool which is a open source for **startups, Freelancers or other developers** to manage their own projects and collaborate with other team members.
+
 ## 📌 Features
 
 * 🗂️ Create and manage projects
