@@ -5,6 +5,8 @@ export default function DashboardHome() {
   const [user, setUser] = useState<any>(null);
   const [tasksl, setTasksl] = useState([])
   const [projects, setProjects] = useState([])
+  const [displayProjects, setDisplayProjects] = useState(false)
+  const [displayTasks, setDisplayTasks] = useState(false)
   const [stats, setStats] = useState({
     projects: 0,
     tasks: 0,
@@ -113,151 +115,165 @@ export default function DashboardHome() {
 
       {/* 🔷 Recent Projects */}
       <div className="bg-white p-6 rounded shadow border">
-        <h2 className="text-lg font-semibold mb-4">Recent Projects</h2>
+        <div className="flex justify-between mb-2">
+          <h2 className="text-lg font-semibold mb-4">Recent Projects</h2>
+          <button
+          onClick={()=>setDisplayProjects(!displayProjects)}
+           className="px-2 border rounded-lg shadow font-bold text-2xl"
+           >{ displayProjects ? '-' : '+' }</button>
+        </div>
+        { displayProjects &&
+          <div className="overflow-x-auto">
+            <table className="w-full border border-gray-200 rounded-lg">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="p-3 border">#</th>
+                  <th className="p-3 border text-left">Name</th>
+                  <th className="p-3 border text-left">Status</th>
+                  <th className="p-3 border text-left">Created</th>
+                  <th className="p-3 border text-center">Actions</th>
+                </tr>
+              </thead>
 
-        <div className="overflow-x-auto">
-          <table className="w-full border border-gray-200 rounded-lg">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="p-3 border">#</th>
-                <th className="p-3 border text-left">Name</th>
-                <th className="p-3 border text-left">Status</th>
-                <th className="p-3 border text-left">Created</th>
-                <th className="p-3 border text-center">Actions</th>
-              </tr>
-            </thead>
+              <tbody>
+                {projects.length > 0 ? (
+                  projects.slice(0, 5).map((item, index) => (
+                    <tr key={item.id} className="hover:bg-gray-50">
+                      <td className="p-3 border">{index + 1}</td>
 
-            <tbody>
-              {projects.length > 0 ? (
-                projects.slice(0, 5).map((item, index) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="p-3 border">{index + 1}</td>
+                      <td className="p-3 border font-medium">
+                        {item.name}
+                      </td>
 
-                    <td className="p-3 border font-medium">
-                      {item.name}
-                    </td>
+                      {/* 🔹 Status Badge */}
+                      <td className="p-3 border">
+                        <span className={`px-2 py-1 text-xs rounded-full 
+                          ${item.status === "completed"
+                            ? "bg-green-100 text-green-600"
+                            : "bg-yellow-100 text-yellow-600"
+                          }`}>
+                          {item.status || "Pending"}
+                        </span>
+                      </td>
 
-                    {/* 🔹 Status Badge */}
-                    <td className="p-3 border">
-                      <span className={`px-2 py-1 text-xs rounded-full 
-                        ${item.status === "completed"
-                          ? "bg-green-100 text-green-600"
-                          : "bg-yellow-100 text-yellow-600"
-                        }`}>
-                        {item.status || "Pending"}
-                      </span>
-                    </td>
+                      <td className="p-3 border">
+                        {item.created_at
+                          ? new Date(item.created_at).toLocaleDateString()
+                          : "-"}
+                      </td>
 
-                    <td className="p-3 border">
-                      {item.created_at
-                        ? new Date(item.created_at).toLocaleDateString()
-                        : "-"}
-                    </td>
+                      {/* 🔹 Actions */}
+                      <td className="p-3 border text-center flex gap-2 justify-between space-x-2">
+                        <button className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600">
+                          View
+                        </button>
 
-                    {/* 🔹 Actions */}
-                    <td className="p-3 border text-center space-x-2">
-                      <button className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600">
-                        View
-                      </button>
+                        <button className="px-3 py-1 text-sm bg-green-500 text-white rounded hover:bg-green-600">
+                          Edit
+                        </button>
 
-                      <button className="px-3 py-1 text-sm bg-green-500 text-white rounded hover:bg-green-600">
-                        Edit
-                      </button>
-
-                      <button className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600">
-                        Delete
-                      </button>
+                        <button className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600">
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="text-center p-4 text-gray-500">
+                      No projects available
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="5" className="text-center p-4 text-gray-500">
-                    No projects available
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                )}
+              </tbody>
+            </table>
+          </div>
+        }
       </div>
 
       {/* 🔷 Recent Tasks */}
       <div className="bg-white p-6 rounded shadow border">
-        <h2 className="text-lg font-semibold mb-4">Recent Tasks</h2>
+        <div className="flex justify-between mb-2">
+          <h2 className="text-lg font-semibold mb-4">Recent Tasks</h2>
+          <button
+          onClick={()=>setDisplayTasks(!displayTasks)}
+           className="px-2 border rounded-lg shadow font-bold text-2xl"
+           >{ displayTasks ? '-' : '+' }</button>
+        </div>
+        { displayTasks &&  
+          <div className="overflow-x-auto">
+            <table className="w-full border border-gray-200 rounded-lg">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="p-3 border">#</th>
+                  <th className="p-3 border text-left">Title</th>
+                  <th className="p-3 border text-left">Priority</th>
+                  <th className="p-3 border text-left">Status</th>
+                  <th className="p-3 border text-center">Actions</th>
+                </tr>
+              </thead>
 
-        <div className="overflow-x-auto">
-          <table className="w-full border border-gray-200 rounded-lg">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="p-3 border">#</th>
-                <th className="p-3 border text-left">Title</th>
-                <th className="p-3 border text-left">Priority</th>
-                <th className="p-3 border text-left">Status</th>
-                <th className="p-3 border text-center">Actions</th>
-              </tr>
-            </thead>
+              <tbody>
+                {tasksl.length > 0 ? (
+                  tasksl.slice(0, 5).map((item, index) => (
+                    <tr key={item.id} className="hover:bg-gray-50">
+                      <td className="p-3 border">{index + 1}</td>
 
-            <tbody>
-              {tasksl.length > 0 ? (
-                tasksl.slice(0, 5).map((item, index) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="p-3 border">{index + 1}</td>
+                      <td className="p-3 border font-medium">
+                        {item.title}
+                      </td>
 
-                    <td className="p-3 border font-medium">
-                      {item.title}
-                    </td>
+                      {/* 🔹 Priority */}
+                      <td className="p-3 border">
+                        <span className={`px-2 py-1 text-xs rounded-full 
+                          ${item.priority === "high"
+                            ? "bg-red-100 text-red-600"
+                            : item.priority === "medium"
+                            ? "bg-yellow-100 text-yellow-600"
+                            : "bg-green-100 text-green-600"
+                          }`}>
+                          {item.priority || "Low"}
+                        </span>
+                      </td>
 
-                    {/* 🔹 Priority */}
-                    <td className="p-3 border">
-                      <span className={`px-2 py-1 text-xs rounded-full 
-                        ${item.priority === "high"
-                          ? "bg-red-100 text-red-600"
-                          : item.priority === "medium"
-                          ? "bg-yellow-100 text-yellow-600"
-                          : "bg-green-100 text-green-600"
-                        }`}>
-                        {item.priority || "Low"}
-                      </span>
-                    </td>
+                      {/* 🔹 Status */}
+                      <td className="p-3 border">
+                        <span className={`px-2 py-1 text-xs rounded-full 
+                          ${item.completed
+                            ? "bg-green-100 text-green-600"
+                            : "bg-gray-100 text-gray-600"
+                          }`}>
+                          {item.completed ? "Completed" : "Pending"}
+                        </span>
+                      </td>
 
-                    {/* 🔹 Status */}
-                    <td className="p-3 border">
-                      <span className={`px-2 py-1 text-xs rounded-full 
-                        ${item.completed
-                          ? "bg-green-100 text-green-600"
-                          : "bg-gray-100 text-gray-600"
-                        }`}>
-                        {item.completed ? "Completed" : "Pending"}
-                      </span>
-                    </td>
+                      {/* 🔹 Actions */}
+                      <td className="p-3 border text-center flex gap-2 justify-between space-x-2">
+                        <button className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600">
+                          View
+                        </button>
 
-                    {/* 🔹 Actions */}
-                    <td className="p-3 border text-center space-x-2">
-                      <button className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600">
-                        View
-                      </button>
+                        <button className="px-3 py-1 text-sm bg-green-500 text-white rounded hover:bg-green-600">
+                          Edit
+                        </button>
 
-                      <button className="px-3 py-1 text-sm bg-green-500 text-white rounded hover:bg-green-600">
-                        Edit
-                      </button>
-
-                      <button className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600">
-                        Delete
-                      </button>
+                        <button className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600">
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="text-center p-4 text-gray-500">
+                      No tasks available
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="5" className="text-center p-4 text-gray-500">
-                    No tasks available
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                )}
+              </tbody>
+            </table>
+          </div>
+        }
       </div>
 
     </div>

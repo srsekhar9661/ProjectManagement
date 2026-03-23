@@ -129,11 +129,68 @@ export default function Navbar() {
 
         {/* Menu Items */}
         <ul className="flex flex-col gap-4">
-          <li className="text-white">Home</li>
-          <li className="text-white">About</li>
-          <li className="text-white">Login</li>
-          <li className="text-white">Signup</li>
-          <li className="text-white">Logout</li>
+          <NavLink
+          to="/"
+          className={({ isActive }) =>
+            `${baseClass} ${isActive ? activeClass : ""}`
+          }
+        >
+          Home
+        </NavLink>
+
+        <NavLink
+          to="/features"
+          className={({ isActive }) =>
+            `${baseClass} ${isActive ? activeClass : ""}`
+          }
+        >
+          Features
+        </NavLink>
+        
+        <NavLink
+          to="/about"
+          className={({ isActive }) =>
+            `${baseClass} ${isActive ? activeClass : ""}`
+          }
+        >
+          About
+        </NavLink>
+
+          {token ?  
+          <>
+          <NavLink 
+          to='/dashboard'
+          className={({ isActive }) =>
+                `${baseClass} ${isActive ? activeClass : ""}`
+            }
+          >
+            Dashboard
+          </NavLink>
+          <li onClick={handleLogout} className="cursor-pointer hover:text-whitesmoke hover:rounded hover:px-1 hover:bg-gray-100">
+            Logout
+            </li>
+          </>
+          :
+          <>
+            <NavLink
+            to="/signup"
+            className={({ isActive }) =>
+                `${baseClass} ${isActive ? activeClass : ""}`
+            }
+            >
+            Signup
+            </NavLink>
+
+            <NavLink
+            to="/login"
+            className={({ isActive }) =>
+                `${baseClass} ${isActive ? activeClass : ""}`
+            }
+            >
+            Login
+            </NavLink>
+            </>
+          }
         </ul>
       </div>
     </>
