@@ -101,7 +101,7 @@ export default function Login() {
             </div>
 
             {/* Remember + Forgot */}
-            <div className="flex justify-between items-center text-sm text-gray-600">
+            {/* <div className="flex justify-between items-center text-sm text-gray-600">
               <label className="flex items-center gap-2">
                 <input type="checkbox" />
                 Remember me
@@ -110,7 +110,7 @@ export default function Login() {
               <span className="text-blue-600 cursor-pointer hover:underline">
                 Forgot Password?
               </span>
-            </div>
+            </div> */}
 
             {/* Button */}
             <button
