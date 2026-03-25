@@ -1,6 +1,6 @@
 export default function Features() {
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 w-screen min-h-screen">
 
       {/* 🔷 HERO SECTION */}
       <section className="max-w-6xl mx-auto px-6 py-16 text-center">

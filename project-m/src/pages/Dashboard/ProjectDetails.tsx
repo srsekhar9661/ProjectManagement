@@ -2,35 +2,110 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import API from "../../api";
 
+type Task = {
+  id: number;
+  title: string;
+  description: string;
+  status: "pending" | "progress" | "done";
+  assigned_to?: string;
+};
+
 export default function ProjectDetails() {
   const { id } = useParams();
 
+  // 🔹 Role (mock for now)
+  const [role, setRole] = useState<"owner" | "admin" | "member">("owner");
+
+  // 🔹 Project
   const [project, setProject] = useState<any>(null);
-  const [tasks, setTasks] = useState<any[]>([]);
+
+  // 🔹 Tasks
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  // 🔹 UI States
+  const [view, setView] = useState<"grid" | "table">("grid");
+  const [showTaskModal, setShowTaskModal] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+
+  // 🔹 Forms
   const [taskData, setTaskData] = useState({
     title: "",
     description: "",
   });
 
-  const [showForm, setShowForm] = useState(false);
-  const [view, setView] = useState<"grid" | "table">("grid");
+  const [inviteData, setInviteData] = useState({
+    email: "",
+    role: "member",
+  });
 
+  // 🔹 Dummy Load
   useEffect(() => {
-    API.get(`projects/${id}/`).then((res) => setProject(res.data));
-    API.get(`projects/${id}/tasks/`).then((res) => setTasks(res.data));
+    API.get(`projects/${id}/`).then(res => setProject(res.data))
+    API.get(`projects/${id}/tasks/`).then(res => setTasks(res.data))
+
+    // Dummy Data
+    // setProject({
+    //   id,
+    //   name: "Project Alpha",
+    //   description: "This is a sample project",
+    // });
+
+    // setTasks([
+    //   {
+    //     id: 1,
+    //     title: "Setup Backend",
+    //     description: "Initialize Django project",
+    //     status: "progress",
+    //     assigned_to: "Ravi",
+    //   },
+    //   {
+    //     id: 2,
+    //     title: "Design UI",
+    //     description: "Create dashboard UI",
+    //     status: "pending",
+    //     assigned_to: "Raja",
+    //   },
+    // ]);
   }, [id]);
 
-  const fetchTasks = async () => {
-    const res = await API.get(`projects/${id}/tasks/`);
-    setTasks(res.data);
+  // 🔹 Create Task
+  const createTask = async () => {
+    await API.post(`projects/${id}/tasks/create/`, taskData)
+
+    const newTask: Task = {
+      id: Date.now(),
+      ...taskData,
+      status: "pending",
+    };
+
+    setTasks((prev) => [...prev, newTask]);
+    setTaskData({ title: "", description: "" });
+    setShowTaskModal(false);
   };
 
-  const createTask = async () => {
-    await API.post(`projects/${id}/tasks/create/`, taskData);
+  // 🔹 Delete Task
+  const deleteTask = async (taskId: number) => {
+    // await API.delete(`tasks/${taskId}/`)
 
-    setTaskData({ title: "", description: "" });
-    setShowForm(false);
-    fetchTasks();
+    setTasks((prev) => prev.filter((t) => t.id !== taskId));
+  };
+
+  // 🔹 Complete Task
+  const completeTask = (taskId: number) => {
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === taskId ? { ...t, status: "done" } : t
+      )
+    );
+  };
+
+  // 🔹 Invite User
+  const inviteUser = async () => {
+    // await API.post(`projects/${id}/invite/`, inviteData)
+
+    console.log("Inviting:", inviteData);
+    setShowInviteModal(false);
+    setInviteData({ email: "", role: "member" });
   };
 
   const getStatusColor = (status: string) => {
@@ -49,19 +124,34 @@ export default function ProjectDetails() {
   return (
     <div className="space-y-6">
 
-      {/* 🔷 Project Header */}
+      {/* 🔷 Header */}
       <div className="bg-white p-5 rounded shadow flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold">{project.name}</h1>
           <p className="text-gray-600">{project.description}</p>
+
+          <span className="text-xs bg-gray-200 px-2 py-1 rounded mt-2 inline-block">
+            Role: {role}
+          </span>
         </div>
 
-        <button
-          onClick={() => setShowForm(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          + Add Task
-        </button>
+        {(role === "owner" || role === "admin") && (
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowInviteModal(true)}
+              className="bg-green-600 text-white px-4 py-2 rounded"
+            >
+             + Invite
+            </button>
+
+            <button
+              onClick={() => setShowTaskModal(true)}
+              className="bg-blue-600 text-white px-4 py-2 rounded"
+            >
+              + Add Task
+            </button>
+          </div>
+        )}
       </div>
 
       {/* 🔷 Controls */}
@@ -89,46 +179,65 @@ export default function ProjectDetails() {
         </div>
       </div>
 
-      {/* 🔷 TASK GRID */}
+      {/* 🔷 GRID VIEW */}
       {view === "grid" && (
         <div className="grid md:grid-cols-3 gap-4">
           {tasks.map((task) => (
-            <div
-              key={task.id}
-              className="bg-white p-4 rounded shadow hover:shadow-md transition"
-            >
+            <div key={task.id} className="bg-white p-4 rounded shadow">
               <h3 className="font-semibold">{task.title}</h3>
-
               <p className="text-sm text-gray-500 mt-2">
                 {task.description}
               </p>
 
-              <span
-                className={`inline-block mt-3 px-2 py-1 text-xs rounded ${getStatusColor(
-                  task.status
-                )}`}
-              >
+              <p className="text-xs mt-2">
+                Assigned: {task.assigned_to || "Unassigned"}
+              </p>
+
+              <span className={`inline-block mt-2 px-2 py-1 text-xs rounded ${getStatusColor(task.status)}`}>
                 {task.status}
               </span>
 
               {/* Actions */}
-              <div className="flex justify-between mt-4 text-sm">
-                <button className="text-blue-600">Edit</button>
-                <button className="text-red-600">Delete</button>
+              <div className="mt-3 flex justify-between text-sm">
+                {(role === "member" || role === 'owner' || role == 'admin') && (
+                  <>
+                  <button
+                    onClick={() => completeTask(task.id)}
+                    className="text-green-600"
+                  >
+                    Complete
+                  </button>
+                  <button className="text-blue-500">View</button>
+                  </>
+                )}
+                {(role === "owner" || role === "admin") && (
+                  <>
+                    
+                    <button className="text-blue-600">Edit</button>
+                    <button
+                      onClick={() => deleteTask(task.id)}
+                      className="text-red-600"
+                    >
+                      Delete
+                    </button>
+                  </>
+                )}
+
+                
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* 🔷 TASK TABLE */}
+      {/* 🔷 TABLE VIEW */}
       {view === "table" && (
         <div className="bg-white rounded shadow overflow-x-auto">
           <table className="w-full text-left">
             <thead className="bg-gray-100">
               <tr>
                 <th className="p-3">Title</th>
-                <th className="p-3">Description</th>
+                <th className="p-3">Assigned</th>
                 <th className="p-3">Status</th>
                 <th className="p-3">Actions</th>
               </tr>
@@ -136,24 +245,41 @@ export default function ProjectDetails() {
 
             <tbody>
               {tasks.map((task) => (
-                <tr key={task.id} className="border-t hover:bg-gray-50">
+                <tr key={task.id} className="border-t">
                   <td className="p-3">{task.title}</td>
-                  <td className="p-3 text-gray-500">
-                    {task.description}
-                  </td>
+                  <td className="p-3">{task.assigned_to}</td>
                   <td className="p-3">
-                    <span
-                      className={`px-2 py-1 text-xs rounded ${getStatusColor(
-                        task.status
-                      )}`}
-                    >
+                    <span className={`px-2 py-1 text-xs rounded ${getStatusColor(task.status)}`}>
                       {task.status}
                     </span>
                   </td>
 
-                  <td className="p-3 space-x-3">
-                    <button className="text-blue-600">Edit</button>
-                    <button className="text-red-600">Delete</button>
+                  <td className="p-3 space-x-2 flex flex-row gap-1 justify-between px-[1rem]">
+                    {(role === "member" || role === 'owner' || role == 'admin' ) && (
+                      <>
+                      <button
+                        onClick={() => completeTask(task.id)}
+                        className="text-green-600"
+                      >
+                        Complete
+                      </button>
+                      <button className="text-blue-500">View</button>
+                      </>
+                    )}
+
+                    {(role === "owner" || role === "admin" ) && (
+                      <>
+                        <button className="text-blue-600">Edit</button>
+                        <button
+                          onClick={() => deleteTask(task.id)}
+                          className="text-red-600"
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
+
+                    
                   </td>
                 </tr>
               ))}
@@ -162,41 +288,108 @@ export default function ProjectDetails() {
         </div>
       )}
 
-      {/* 🔷 Add Task Modal */}
-      {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center">
-          <div className="bg-white p-6 rounded shadow w-full max-w-md">
-            <div className="flex justify-between mb-4">
-              <h2 className="font-semibold">Add Task</h2>
-              <button onClick={() => setShowForm(false)}>✕</button>
-            </div>
+      {/* 🔷 Task Modal */}
+      {showTaskModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center"
+          onClick={() => setShowTaskModal(false)}
+        >
+          <div className="bg-white p-6 rounded w-full max-w-md relative">
+            {/* ❌ Close Button */}
+            <button
+              onClick={() => setShowTaskModal(false)}
+              className="absolute top-2 right-3 text-gray-600 hover:text-black"
+            >
+              ✕
+            </button>
+            <h2 className="mb-4 font-semibold">Create Task</h2>
 
             <input
-              type="text"
+              placeholder="Title"
               value={taskData.title}
               onChange={(e) =>
                 setTaskData({ ...taskData, title: e.target.value })
               }
-              placeholder="Task title"
               className="border p-2 w-full mb-3"
             />
 
             <textarea
-              rows={4}
+              placeholder="Description"
               value={taskData.description}
               onChange={(e) =>
                 setTaskData({ ...taskData, description: e.target.value })
               }
-              placeholder="Description"
               className="border p-2 w-full mb-3"
             />
 
+            <div className="flex flex-row gap-1">
+
+              <button
+                onClick={createTask}
+                className="bg-blue-600 text-white px-4 py-2 w-full rounded-lg"
+              >
+                Create
+              </button>
+              <button
+                onClick={() => setShowTaskModal(false)}
+                className="bg-gray-300 px-4 py-2 w-full rounded-lg"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🔷 Invite Modal */}
+      {showInviteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center"
+          onClick={()=> setShowInviteModal(false)}
+        >
+          <div className="bg-white p-6 rounded w-full max-w-md relative">
             <button
-              onClick={createTask}
-              className="bg-blue-600 text-white px-4 py-2 rounded w-full"
+              onClick={() => setShowInviteModal(false)}
+              className="absolute top-2 right-3 text-gray-600 hover:text-black"
             >
-              Create Task
+              ✕
             </button>
+            <h2 className="mb-4 font-semibold">Invite User</h2>
+
+            <input
+              type="email"
+              placeholder="Email"
+              value={inviteData.email}
+              onChange={(e) =>
+                setInviteData({ ...inviteData, email: e.target.value })
+              }
+              className="border p-2 w-full mb-3"
+            />
+
+            <select
+              value={inviteData.role}
+              onChange={(e) =>
+                setInviteData({ ...inviteData, role: e.target.value })
+              }
+              className="border p-2 w-full mb-3"
+            >
+              <option value="member">Member</option>
+              <option value="admin">Admin</option>
+            </select>
+              
+            <div className="flex flex-row gap-1">
+
+            <button
+              onClick={inviteUser}
+              className="bg-green-600 text-white rounded-lg px-4 py-2 w-full"
+            >
+              Send Invite
+            </button>
+            <button
+              onClick={() => setShowInviteModal(false)}
+              className="bg-gray-300 px-4 py-2 w-full rounded-lg"
+            >
+              Cancel
+            </button>
+            </div>
           </div>
         </div>
       )}

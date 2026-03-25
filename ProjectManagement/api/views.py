@@ -119,7 +119,7 @@ def get_user_info(request):
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def get_tasks(request):
+def get_all_tasks(request):
     tasks = Task.objects.filter(
         project__created_by=request.user
     )

@@ -12,10 +12,26 @@ export default function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [view, setView] = useState<"grid" | "table">("grid");
   const navigate = useNavigate();
+  const [showCreate, setShowCreate] = useState(false);
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+  });
+
+  const handleCreateProject = async () => {
+    try {
+      await API.post("projects/create/", formData);
+
+      setFormData({ name: "", description: "" });
+      setShowCreate(false);
+
+      fetchProjects(); // refresh list
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  
 
   const fetchProjects = () => {
     API.get("projects/")
@@ -31,6 +47,10 @@ export default function Projects() {
       console.log(err);
     }
   };
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -55,13 +75,54 @@ export default function Projects() {
           </button>
 
           <button
-            onClick={() => navigate("/dashboard/create")}
+            onClick={() => setShowCreate(true)}
             className="bg-blue-600 text-white px-4 py-2 rounded"
           >
             + Create
           </button>
         </div>
       </div>
+
+      {showCreate && (
+        <div className="bg-white p-6 rounded shadow border space-y-4">
+          <h2 className="text-lg font-semibold">Create Project</h2>
+
+          <input
+            type="text"
+            placeholder="Project Name"
+            value={formData.name}
+            onChange={(e) =>
+              setFormData({ ...formData, name: e.target.value })
+            }
+            className="w-full border p-2 rounded"
+          />
+
+          <textarea
+            placeholder="Description"
+            value={formData.description}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
+            className="w-full border p-2 rounded"
+          />
+
+          <div className="flex gap-3">
+            <button
+              onClick={handleCreateProject}
+              className="bg-blue-600 text-white px-4 py-2 rounded"
+            >
+              Create
+            </button>
+
+            <button
+              onClick={() => setShowCreate(false)}
+              className="bg-gray-300 px-4 py-2 rounded"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 🔷 Empty State */}
       {projects.length === 0 && (

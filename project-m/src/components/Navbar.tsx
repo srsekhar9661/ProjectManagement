@@ -22,7 +22,7 @@ export default function Navbar() {
   return (
     <>
       {/* Navbar */}
-      <nav className="fixed top-0 left-0 w-full bg-blue-600 px-6 py-4 flex justify-between items-center z-50 shadow-md mb-lg-5">
+      <nav className=" bg-blue-600 px-6 py-4 flex justify-between items-center z-50 shadow-md ">
         <h1 className="text-white text-xl font-semibold">
           Project Management
         </h1>

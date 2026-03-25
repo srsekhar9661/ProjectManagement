@@ -21,7 +21,7 @@ export default function HomePage({ projects = [] }: Props) {
     }
     
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 h-full w-screen flex-1 overflow-y-auto">
       
       {/* 🔷 HERO SECTION */}
       <section className="max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-10 items-center">
