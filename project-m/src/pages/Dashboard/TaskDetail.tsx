@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function TaskDetails() {
   const { taskId } = useParams();
@@ -7,6 +8,7 @@ export default function TaskDetails() {
   const [task, setTask] = useState(null);
   const [comment, setComment] = useState("");
   const [file, setFile] = useState(null);
+  const navigate = useNavigate()
 
   useEffect(() => {
     // Dummy data (replace with API)
@@ -68,6 +70,14 @@ export default function TaskDetails() {
 
   return (
     <div className="h-full overflow-y-auto p-6 bg-gray-100">
+        <button
+            onClick={() => navigate(-1)}
+            className="mb-4 text-blue-600 hover:underline"
+        >
+            ← Back
+        </button>
+
+        <h1 className="text-2xl font-bold mb-6">Task Details</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 

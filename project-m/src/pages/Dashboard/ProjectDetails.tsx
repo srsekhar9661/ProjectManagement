@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, NavLink } from "react-router-dom";
+import { useParams, NavLink, useLocation, useNavigate } from "react-router-dom";
 import API from "../../api";
 
 type Task = {
@@ -12,6 +12,8 @@ type Task = {
 
 export default function ProjectDetails() {
   const { id } = useParams();
+  const location = useLocation()
+  const navigate = useNavigate()
 
   // 🔹 Role (mock for now)
   const [role, setRole] = useState<"owner" | "admin" | "member">("owner");
@@ -119,10 +121,21 @@ export default function ProjectDetails() {
     }
   };
 
+  const handleBack = ()=>{
+    // navigate(location.state?.from || '/dashboard')
+    navigate(-1)
+  }
+
   if (!project) return <p>Loading...</p>;
 
   return (
     <div className="space-y-6">
+
+      <button className="mb-4 text-blue-600 hover:underline"
+      onClick={handleBack}
+      >
+         ← Back
+      </button>
 
       {/* 🔷 Header */}
       <div className="bg-white p-5 rounded shadow flex justify-between items-center">
@@ -184,7 +197,7 @@ export default function ProjectDetails() {
         <div className="grid md:grid-cols-3 gap-4">
           {tasks.map((task) => (
             <div key={task.id} className="bg-white p-4 rounded shadow">
-              <h3 className="font-semibold">{task.title}</h3>
+              <NavLink to={`/dashboard/tasks/${task.id}`} className="font-semibold">{task.title}</NavLink>
               <p className="text-sm text-gray-500 mt-2">
                 {task.description}
               </p>
@@ -246,7 +259,7 @@ export default function ProjectDetails() {
             <tbody>
               {tasks.map((task) => (
                 <tr key={task.id} className="border-t">
-                  <td className="p-3">{task.title}</td>
+                  <td className="p-3"><NavLink to={`/dashboard/tasks/${task.id}`}>{ task.title }</NavLink></td>
                   <td className="p-3">{task.assigned_to}</td>
                   <td className="p-3">
                     <span className={`px-2 py-1 text-xs rounded ${getStatusColor(task.status)}`}>
