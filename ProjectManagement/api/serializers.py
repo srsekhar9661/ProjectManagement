@@ -63,13 +63,19 @@ class LoginSerializer(serializers.Serializer):
         return data
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
 
+class SafeUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username']  # ✅ ONLY SAFE FIELDS
 
-class CommentSerialzier(serializers.ModelSerializer):
+
+class CommentSerializer(serializers.ModelSerializer):
+    user = SafeUserSerializer(read_only=True)
     class Meta:
         model = m.Comment
         fields = ['id', 'user', 'content', 'created_at']
@@ -81,7 +87,7 @@ class AttachmentSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'uploaded_at']
 
 class TaskSerializer(serializers.ModelSerializer):
-    comments = CommentSerialzier(many=True, read_only=True)
+    comments = CommentSerializer(many=True, read_only=True)
     attachments = AttachmentSerializer(many=True, read_only=True)
 
     assigned_to = serializers.StringRelatedField()
@@ -91,4 +97,3 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-# class 

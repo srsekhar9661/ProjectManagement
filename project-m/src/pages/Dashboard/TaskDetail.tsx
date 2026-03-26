@@ -23,6 +23,7 @@ export default function TaskDetails() {
             console.log(response.daa)
             setTask(response.data);
 
+            console.log(`original : ${JSON.stringify(response.data)}`)
         } catch (err) {
             console.error(err);
             setError("Failed to load task");
@@ -37,23 +38,27 @@ export default function TaskDetails() {
   if (!task) return <div className="p-6">Loading...</div>;
 
   // 🔹 Add Comment
-  const addComment = () => {
+  const addComment = async () => {
     if (!comment) return;
 
-    setTask({
-      ...task,
-      comments: [
-        ...task.comments,
-        {
-          id: Date.now(),
-          user: "You",
-          text: comment,
-          time: "Just now",
-        },
-      ],
-    });
+    try {
+        const response = await API.post(`/tasks/${taskId}/add-comment/`, {
+            content:comment
+        })
+        console.log(`Data retrieved fromt eh bakcend : ${JSON.stringify(response.data)}`)
+        console.log(`before updating : ${JSON.stringify(task)}`)
+        setTask({
+            ...task,
+            comments:[...task.comments, response.data]
+        })
+        console.log(`after updating : ${JSON.stringify(task)}`)
 
-    setComment("");
+        setComment('')
+    } catch (err) {
+        console.log(err)
+    }
+
+    
   };
 
   // 🔹 Add File
@@ -101,10 +106,10 @@ export default function TaskDetails() {
               {task.comments.map((c) => (
                 <div key={c.id} className="border p-3 rounded-md">
                   <div className="flex justify-between text-sm">
-                    <span className="font-medium">{c.user}</span>
+                    <span className="font-medium">{c.user.username}</span>
                     <span className="text-gray-400">{c.time}</span>
                   </div>
-                  <p className="text-gray-600">{c.text}</p>
+                  <p className="text-gray-600">{c.content}</p>
                 </div>
               ))}
             </div>

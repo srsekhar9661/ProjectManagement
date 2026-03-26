@@ -19,4 +19,5 @@ urlpatterns = [
     path('get-user-info/', v.get_user_info),
     path('get-all-tasks/', v.get_all_tasks),
     path('get-task-detail/<int:id>/', v.get_task_detail),
+    path('tasks/<int:task_id>/add-comment/', v.add_comments),
 ]

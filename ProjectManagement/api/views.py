@@ -6,6 +6,7 @@ from api.serializers import ProjectSerializer, UserSerializer, LoginSerializer
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from api import models as m
+from api import serializers as s
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -135,3 +136,24 @@ def get_task_detail(request, id):
 
     serializer = TaskSerializer(task)
     return Response(serializer.data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_comments(request, task_id):
+    task = get_object_or_404(m.Task, id=task_id)
+    content = request.data.get('content')
+
+    if not content:
+        return Response(
+            {'error':'Comment content is required'},
+            status = status.HTTP_400_BAD_REQUEST
+        )
+    
+    comment = m.Comment.objects.create(
+        task= task,
+        content = content,
+        user=request.user
+    )
+    serializer = s.CommentSerializer(comment)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
