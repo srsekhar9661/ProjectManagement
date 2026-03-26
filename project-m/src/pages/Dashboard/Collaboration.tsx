@@ -1,31 +1,68 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import API from "../../api";
 import { useNavigate } from "react-router-dom";
 
 export default function Collaboration() {
   const navigate = useNavigate();
 
-  const [view, setView] = useState("table"); // grid | table
+  const [view, setView] = useState("table");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
 
-  const projects = [
-    { id: 1, name: "Project Alpha", owner: "John", role: "Editor", status: "Active" },
-    { id: 2, name: "Task Manager", owner: "Ravi", role: "Viewer", status: "Active" },
-    { id: 3, name: "AI Chatbot", owner: "Sneha", role: "Admin", status: "Completed" },
-    { id: 4, name: "E-commerce App", owner: "Amit", role: "Editor", status: "Active" },
-  ];
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // 🔥 Filtering Logic
+  // 🔥 FETCH DATA
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+
+        const res = await API.get("/get-collaboration-projects/");
+
+        console.log("API RESPONSE:", res.data);
+
+        // ✅ Handle different backend structures
+        const data = res.data.projects || res.data;
+
+        setProjects(Array.isArray(data) ? data : []);
+
+      } catch (err) {
+        console.error("API ERROR:", err.response || err);
+        setError("Failed to load collaboration projects");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  // 🔥 SAFE FILTERING
   const filteredProjects = projects.filter((project) => {
+    const name = project.name || "";
+    const owner =
+      typeof project.owner === "string"
+        ? project.owner
+        : project.owner?.username || "";
+
     const matchesSearch =
-      project.name.toLowerCase().includes(search.toLowerCase()) ||
-      project.owner.toLowerCase().includes(search.toLowerCase());
+      name.toLowerCase().includes(search.toLowerCase()) ||
+      owner.toLowerCase().includes(search.toLowerCase());
 
     const matchesStatus =
       statusFilter === "All" || project.status === statusFilter;
 
     return matchesSearch && matchesStatus;
   });
+
+  // 🔥 UI STATES
+  if (loading)
+    return <div className="p-6 text-gray-600">Loading projects...</div>;
+
+  if (error)
+    return <div className="p-6 text-red-500">{error}</div>;
 
   return (
     <div className="h-full overflow-y-auto p-6 bg-gray-100">
@@ -55,7 +92,6 @@ export default function Collaboration() {
             <option>Completed</option>
           </select>
 
-          {/* View Toggle */}
           <button
             onClick={() => setView("grid")}
             className={`px-3 py-1 rounded ${
@@ -79,41 +115,54 @@ export default function Collaboration() {
       {/* 🔹 GRID VIEW */}
       {view === "grid" && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProjects.map((project) => (
-            <div
-              key={project.id}
-              className="bg-white rounded-2xl shadow p-5 hover:shadow-lg transition"
-            >
-              <h2 className="text-lg font-semibold">{project.name}</h2>
-              <p className="text-sm text-gray-500">Owner: {project.owner}</p>
+          {filteredProjects.map((project) => {
+            const owner =
+              typeof project.owner === "string"
+                ? project.owner
+                : project.owner?.username || "Unknown";
 
-              <p className="text-sm mt-2">
-                Role: <span className="text-blue-600">{project.role}</span>
-              </p>
-
-              <p className="text-sm">
-                Status:{" "}
-                <span
-                  className={
-                    project.status === "Active"
-                      ? "text-green-600"
-                      : "text-gray-500"
-                  }
-                >
-                  {project.status}
-                </span>
-              </p>
-
-              <button
-                onClick={() =>
-                  navigate(`/dashboard/projects/${project.id}`)
-                }
-                className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+            return (
+              <div
+                key={project.id}
+                className="bg-white rounded-2xl shadow p-5 hover:shadow-lg transition"
               >
-                Open Project
-              </button>
-            </div>
-          ))}
+                <h2 className="text-lg font-semibold">{project.name}</h2>
+
+                <p className="text-sm text-gray-500">
+                  Owner: {owner}
+                </p>
+
+                <p className="text-sm mt-2">
+                  Role:{" "}
+                  <span className="text-blue-600">
+                    {project.role || "Member"}
+                  </span>
+                </p>
+
+                <p className="text-sm">
+                  Status:{" "}
+                  <span
+                    className={
+                      project.status === "Active"
+                        ? "text-green-600"
+                        : "text-gray-500"
+                    }
+                  >
+                    {project.status}
+                  </span>
+                </p>
+
+                <button
+                  onClick={() =>
+                    navigate(`/dashboard/projects/${project.id}`)
+                  }
+                  className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+                >
+                  Open Project
+                </button>
+              </div>
+            );
+          })}
         </div>
       )}
 
@@ -132,40 +181,49 @@ export default function Collaboration() {
             </thead>
 
             <tbody>
-              {filteredProjects.map((project) => (
-                <tr key={project.id} className="border-t">
-                  <td className="p-3">{project.name}</td>
-                  <td className="p-3">{project.owner}</td>
-                  <td className="p-3 text-blue-600">{project.role}</td>
-                  <td className="p-3">
-                    <span
-                      className={
-                        project.status === "Active"
-                          ? "text-green-600"
-                          : "text-gray-500"
-                      }
-                    >
-                      {project.status}
-                    </span>
-                  </td>
-                  <td className="p-3">
-                    <button
-                      onClick={() =>
-                        navigate(`/dashboard/projects/${project.id}`)
-                      }
-                      className="bg-blue-600 text-white px-3 py-1 rounded"
-                    >
-                      Open
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {filteredProjects.map((project) => {
+                const owner =
+                  typeof project.owner === "string"
+                    ? project.owner
+                    : project.owner?.username || "Unknown";
+
+                return (
+                  <tr key={project.id} className="border-t">
+                    <td className="p-3">{project.name}</td>
+                    <td className="p-3">{owner}</td>
+                    <td className="p-3 text-blue-600">
+                      {project.role || "Member"}
+                    </td>
+                    <td className="p-3">
+                      <span
+                        className={
+                          project.status === "Active"
+                            ? "text-green-600"
+                            : "text-gray-500"
+                        }
+                      >
+                        {project.status}
+                      </span>
+                    </td>
+                    <td className="p-3">
+                      <button
+                        onClick={() =>
+                          navigate(`/dashboard/projects/${project.id}`)
+                        }
+                        className="bg-blue-600 text-white px-3 py-1 rounded"
+                      >
+                        Open
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       )}
 
-      {/* 🔹 Empty State */}
+      {/* 🔹 EMPTY STATE */}
       {filteredProjects.length === 0 && (
         <div className="text-center mt-10 text-gray-500">
           No projects found

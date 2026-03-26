@@ -20,4 +20,5 @@ urlpatterns = [
     path('get-all-tasks/', v.get_all_tasks),
     path('get-task-detail/<int:id>/', v.get_task_detail),
     path('tasks/<int:task_id>/add-comment/', v.add_comments),
+    path('get-collaboration-projects/', v.get_collaboration_projects),
 ]

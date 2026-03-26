@@ -53,7 +53,7 @@ def login(request):
 @permission_classes([IsAuthenticated])
 def get_project_detail(request, id):
     # project = get_object_or_404(Project, id=id)
-    project = get_object_or_404(Project, id=id, created_by=request.user)
+    project = get_object_or_404(Project, id=id)
     serializer = ProjectSerializer(project)
     return Response(serializer.data)
 
@@ -157,3 +157,15 @@ def add_comments(request, task_id):
     )
     serializer = s.CommentSerializer(comment)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_collaboration_projects(request):
+    user = request.user
+    projects = m.Project.objects.filter(
+        membership__user__id = user.id
+    )
+    serializer = ProjectSerializer(projects, many=True)
+    return Response(serializer.data)
+
