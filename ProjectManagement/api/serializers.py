@@ -3,6 +3,7 @@ from api.models import Project, Task
 from django.contrib.auth.models import User
 from api.models import Profile
 from django.contrib.auth import authenticate
+from api import models as m
 
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
@@ -68,8 +69,26 @@ class UserSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CommentSerialzier(serializers.ModelSerializer):
+    class Meta:
+        model = m.Comment
+        fields = ['id', 'user', 'content', 'created_at']
+
+
+class AttachmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = m.Attachment
+        fields = ['id', 'title', 'uploaded_at']
+
 class TaskSerializer(serializers.ModelSerializer):
+    comments = CommentSerialzier(many=True, read_only=True)
+    attachments = AttachmentSerializer(many=True, read_only=True)
+
+    assigned_to = serializers.StringRelatedField()
+    created_by = serializers.StringRelatedField()
     class Meta:
         model = Task
         fields = '__all__'
 
+
+# class 

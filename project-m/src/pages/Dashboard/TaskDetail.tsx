@@ -1,35 +1,38 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import API from "../../api";
 
 export default function TaskDetails() {
-  const { taskId } = useParams();
+    const { taskId } = useParams();
 
-  const [task, setTask] = useState(null);
-  const [comment, setComment] = useState("");
-  const [file, setFile] = useState(null);
-  const navigate = useNavigate()
+    const [task, setTask] = useState(null);
+    const [comment, setComment] = useState("");
+    const [file, setFile] = useState(null);
+    const navigate = useNavigate()
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
-  useEffect(() => {
-    // Dummy data (replace with API)
-    const data = {
-      id: taskId,
-      title: "Build Dashboard UI",
-      description: "Create a clean and responsive dashboard layout.",
-      status: "In Progress",
-      priority: "High",
-      dueDate: "2026-04-10",
-      assignee: "Raja Sekhar",
-      comments: [
-        { id: 1, user: "John", text: "Update sidebar spacing", time: "2h ago" },
-      ],
-      attachments: [
-        { id: 1, name: "design.png" },
-      ],
-    };
+    useEffect(() => {
+        const fetchTask = async () => {
+        try {
+            console.log('ohdfgoashd')
+            setLoading(true);
 
-    setTask(data);
-  }, [taskId]);
+            const response = await API.get(`/get-task-detail/${taskId}/`);
+            console.log(response.daa)
+            setTask(response.data);
+
+        } catch (err) {
+            console.error(err);
+            setError("Failed to load task");
+        } finally {
+            setLoading(false);
+        }
+        };
+
+        fetchTask();
+    }, [taskId]);
 
   if (!task) return <div className="p-6">Loading...</div>;
 

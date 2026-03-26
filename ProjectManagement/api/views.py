@@ -5,7 +5,7 @@ from api.models import Project, ProjectMembership, Task
 from api.serializers import ProjectSerializer, UserSerializer, LoginSerializer
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-
+from api import models as m
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -126,3 +126,12 @@ def get_all_tasks(request):
     print(f'Tasks {tasks}')
     serializer = TaskSerializer(tasks, many=True)
     return Response(serializer.data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_task_detail(request, id):
+    task = get_object_or_404(m.Task, id=id)
+
+    serializer = TaskSerializer(task)
+    return Response(serializer.data)

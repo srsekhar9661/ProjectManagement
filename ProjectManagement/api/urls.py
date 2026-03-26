@@ -18,4 +18,5 @@ urlpatterns = [
     path('projects/<int:id>/', v.delete_project),
     path('get-user-info/', v.get_user_info),
     path('get-all-tasks/', v.get_all_tasks),
+    path('get-task-detail/<int:id>/', v.get_task_detail),
 ]
