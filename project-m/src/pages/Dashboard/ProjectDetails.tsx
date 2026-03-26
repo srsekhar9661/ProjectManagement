@@ -245,8 +245,8 @@ export default function ProjectDetails() {
 
       {/* 🔷 TABLE VIEW */}
       {view === "table" && (
-        <div className="bg-white rounded shadow overflow-x-auto">
-          <table className="w-full text-left">
+        <div className="bg-white rounded border border-gray-200 border-[2px] shadow overflow-x-auto">
+          <table className="w-full text-center">
             <thead className="bg-gray-100">
               <tr>
                 <th className="p-3">Title</th>
@@ -306,7 +306,8 @@ export default function ProjectDetails() {
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center"
           onClick={() => setShowTaskModal(false)}
         >
-          <div className="bg-white p-6 rounded w-full max-w-md relative">
+          <div className="bg-white p-6 rounded w-full max-w-md relative"
+            onClick={(e)=> e.stopPropagation()}>
             {/* ❌ Close Button */}
             <button
               onClick={() => setShowTaskModal(false)}
@@ -358,7 +359,9 @@ export default function ProjectDetails() {
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center"
           onClick={()=> setShowInviteModal(false)}
         >
-          <div className="bg-white p-6 rounded w-full max-w-md relative">
+          <div className="bg-white p-6 rounded w-full max-w-md relative"
+            onClick={(e)=> e.stopPropagation()}
+          >
             <button
               onClick={() => setShowInviteModal(false)}
               className="absolute top-2 right-3 text-gray-600 hover:text-black"

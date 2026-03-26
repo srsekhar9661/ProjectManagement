@@ -22,8 +22,8 @@ class Profile(models.Model):
 
 ROLES = [
     ('admin', 'admin'),
-    ('ProjectManager', 'ProjectManager'),
-    ('developer', 'developer'),
+    ('member', 'Member'),
+    # ('developer', 'developer'),
 ]
 
 class ProjectMembership(models.Model):

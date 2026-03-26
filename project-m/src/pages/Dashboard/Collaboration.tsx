@@ -181,7 +181,17 @@ export default function Collaboration() {
             </thead>
 
             <tbody>
-              {filteredProjects.map((project) => {
+
+            {/* if projects length is zero */}
+            { filteredProjects.length == 0 ?
+                <tr>
+                    <th colSpan={5} className="text-center text-gray-500 text-sm py-3">
+                        Projects are not available
+                    </th>
+                </tr>
+                :
+
+              filteredProjects.map((project) => {
                 const owner =
                   typeof project.owner === "string"
                     ? project.owner
@@ -224,7 +234,7 @@ export default function Collaboration() {
       )}
 
       {/* 🔹 EMPTY STATE */}
-      {filteredProjects.length === 0 && (
+      {filteredProjects.length === 0 && view === 'grid' && (
         <div className="text-center mt-10 text-gray-500">
           No projects found
         </div>

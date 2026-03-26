@@ -124,15 +124,18 @@ export default function Projects() {
         </div>
       )}
 
-      {/* 🔷 Empty State */}
-      {projects.length === 0 && (
-        <div className="text-center text-gray-500">
-          No projects available
-        </div>
-      )}
+      
 
       {/* 🔷 GRID VIEW */}
       {view === "grid" && (
+
+        <>
+        {/* 🔷 Empty State */}
+        {projects.length === 0 && (
+          <div className="text-center text-gray-500">
+            No projects available
+          </div>
+        )}
         <div className="grid md:grid-cols-3 gap-5">
           {projects.map((project) => (
             <div
@@ -176,12 +179,13 @@ export default function Projects() {
             </div>
           ))}
         </div>
+        </>
       )}
 
       {/* 🔷 TABLE VIEW */}
       {view === "table" && (
         <div className="bg-white rounded shadow overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-center border border-2 table">
             <thead className="bg-gray-100">
               <tr>
                 <th className="p-3">Name</th>
@@ -191,47 +195,58 @@ export default function Projects() {
             </thead>
 
             <tbody>
-              {projects.map((project) => (
-                <tr key={project.id} className="border-t hover:bg-gray-50">
-                  <td
-                    className="p-3 cursor-pointer text-blue-600"
-                    onClick={() =>
-                      navigate(`/dashboard/projects/${project.id}`)
-                    }
-                  >
-                    {project.name}
-                  </td>
-
-                  <td className="p-3 text-gray-500">
-                    {project.description}
-                  </td>
-
-                  <td className="p-3 space-x-3">
-                    <button
+              <>
+              {/* 🔷 Empty State */}
+              {projects.length === 0 ? (
+                <tr>
+                  <th colSpan={3} className="text-center text-gray-500 font-normal py-3">
+                    No projects available
+                  </th>
+                </tr>
+                ) :
+                projects.map((project) => (
+                  <tr key={project.id} className="border-t hover:bg-gray-50">
+                    <td
+                      className="p-3 cursor-pointer text-blue-600"
                       onClick={() =>
                         navigate(`/dashboard/projects/${project.id}`)
                       }
-                      className="text-blue-600"
                     >
-                      View
-                    </button>
+                      {project.name}
+                    </td>
 
-                    <button
-                      onClick={() => alert("Edit coming")}
-                      className="text-yellow-600"
-                    >
-                      Edit
-                    </button>
+                    <td className="p-3 text-gray-500">
+                      {project.description}
+                    </td>
 
-                    <button
-                      onClick={() => handleDelete(project.id)}
-                      className="text-red-600"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                    <td className="p-3 space-x-3">
+                      <button
+                        onClick={() =>
+                          navigate(`/dashboard/projects/${project.id}`)
+                        }
+                        className="text-blue-600"
+                      >
+                        View
+                      </button>
+
+                      <button
+                        onClick={() => alert("Edit coming")}
+                        className="text-yellow-600"
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        onClick={() => handleDelete(project.id)}
+                        className="text-red-600"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              }
+              </>
             </tbody>
           </table>
         </div>

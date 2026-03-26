@@ -12,6 +12,8 @@ export default function TaskDetails() {
     const navigate = useNavigate()
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [hideComments, setHideComments] = useState(true)
+    const [hideAttachments, setHideAttachments] = useState(true)
 
     useEffect(() => {
         const fetchTask = async () => {
@@ -100,67 +102,88 @@ export default function TaskDetails() {
 
           {/* Comments */}
           <div className="bg-white p-6 rounded-2xl shadow">
-            <h2 className="text-lg font-semibold mb-4">Comments</h2>
+            <div className="w-full relative">
 
-            <div className="space-y-3 mb-4">
-              {task.comments.map((c) => (
-                <div key={c.id} className="border p-3 rounded-md">
-                  <div className="flex justify-between text-sm">
-                    <span className="font-medium">{c.user.username}</span>
-                    <span className="text-gray-400">{c.time}</span>
-                  </div>
-                  <p className="text-gray-600">{c.content}</p>
+                <h2 className="text-lg font-semibold mb-4">Comments</h2>
+                <span className="absolute top-1 right-1 transition-smooth  hover:cursor-pointer hover:bg-black hover:text-white p-2 rounded-xl" 
+                    onClick={()=>setHideComments(!hideComments)}
+                >{ hideComments ? '🔽' : '🔼' }</span>
+            </div>
+
+            {
+                !hideComments && 
+            <>
+                <div className="space-y-3 my-4">
+                    {task.comments.map((c) => (
+                        <div key={c.id} className="border p-3 rounded-md">
+                        <div className="flex justify-between text-sm">
+                            <span className="font-medium">{c.user.username}</span>
+                            <span className="text-gray-400">{c.time}</span>
+                        </div>
+                        <p className="text-gray-600">{c.content}</p>
+                        </div>
+                    ))}
                 </div>
-              ))}
-            </div>
+                
+                <div className="flex gap-2">
+                    <input
+                        type="text"
+                        placeholder="Write a comment..."
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                        className="flex-1 border p-2 rounded-md"
+                    />
 
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Write a comment..."
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                className="flex-1 border p-2 rounded-md"
-              />
+                    <button
+                        onClick={addComment}
+                        className="bg-blue-600 text-white px-4 rounded-md"
+                    >
+                        Send
+                    </button>
+                </div>
+            </>
+            
+            }
 
-              <button
-                onClick={addComment}
-                className="bg-blue-600 text-white px-4 rounded-md"
-              >
-                Send
-              </button>
-            </div>
           </div>
 
           {/* Attachments */}
           <div className="bg-white p-6 rounded-2xl shadow">
-            <h2 className="text-lg font-semibold mb-4">Attachments</h2>
+            <div className="relative">
+                  <h2 className="text-lg font-semibold mb-4">Attachments</h2>
+                  <span className="absolute top-1 right-1 transition-smooth  hover:cursor-pointer hover:bg-black hover:text-white p-2 rounded-xl" 
+                    onClick={()=>setHideAttachments(!hideAttachments)}
+                     >{ !hideAttachments ? '🔽' : '🔼' }</span>
+            </div>
 
-            <div className="space-y-2 mb-4">
-              {task.attachments.map((file) => (
-                <div
-                  key={file.id}
-                  className="border p-2 rounded-md text-sm"
+            { hideAttachments && <>
+            
+              <div className="space-y-2 mb-4">
+                {task.attachments.map((file) => (
+                  <div
+                    key={file.id}
+                    className="border p-2 rounded-md text-sm"
+                  >
+                    📄 {file.name}
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex gap-2">
+                <input
+                  type="file"
+                  onChange={(e) => setFile(e.target.files[0])}
+                  className="border p-1 rounded-md"
+                />
+
+                <button
+                  onClick={handleFileUpload}
+                  className="bg-green-600 text-white px-4 rounded-md"
                 >
-                  📄 {file.name}
-                </div>
-              ))}
-            </div>
-
-            <div className="flex gap-2">
-              <input
-                type="file"
-                onChange={(e) => setFile(e.target.files[0])}
-                className="border p-1 rounded-md"
-              />
-
-              <button
-                onClick={handleFileUpload}
-                className="bg-green-600 text-white px-4 rounded-md"
-              >
-                Upload
-              </button>
-            </div>
+                  Upload
+                </button>
+              </div>
+            </>}
           </div>
 
         </div>
