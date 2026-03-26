@@ -15,7 +15,7 @@ export default function DashboardLayout() {
           <NavLink to="/dashboard" end>Home</NavLink>
           <NavLink to="/dashboard/projects">Projects</NavLink>
           <NavLink to="/dashboard/">collaboration</NavLink>
-          <NavLink to="/dashboard/create">Settings</NavLink>
+          <NavLink to="/dashboard/settings">Settings</NavLink>
         </nav>
       </div>
 
