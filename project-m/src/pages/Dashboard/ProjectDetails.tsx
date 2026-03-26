@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, NavLink } from "react-router-dom";
 import API from "../../api";
 
 type Task = {
@@ -23,7 +23,7 @@ export default function ProjectDetails() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   // 🔹 UI States
-  const [view, setView] = useState<"grid" | "table">("grid");
+  const [view, setView] = useState<"grid" | "table">("table");
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
 
@@ -207,7 +207,7 @@ export default function ProjectDetails() {
                   >
                     Complete
                   </button>
-                  <button className="text-blue-500">View</button>
+                  <NavLink to={`/dashboard/tasks/${task.id}`} className="text-blue-500">View</NavLink>
                   </>
                 )}
                 {(role === "owner" || role === "admin") && (
@@ -263,7 +263,7 @@ export default function ProjectDetails() {
                       >
                         Complete
                       </button>
-                      <button className="text-blue-500">View</button>
+                      <NavLink to={`/dashboard/tasks/${task.id}`} className="text-blue-500">View</NavLink>
                       </>
                     )}
 

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 export default function Collaboration() {
   const navigate = useNavigate();
 
-  const [view, setView] = useState("grid"); // grid | table
+  const [view, setView] = useState("table"); // grid | table
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
 

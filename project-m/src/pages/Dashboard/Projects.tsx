@@ -10,7 +10,7 @@ type Project = {
 
 export default function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
-  const [view, setView] = useState<"grid" | "table">("grid");
+  const [view, setView] = useState<"grid" | "table">("table");
   const navigate = useNavigate();
   const [showCreate, setShowCreate] = useState(false);
 
