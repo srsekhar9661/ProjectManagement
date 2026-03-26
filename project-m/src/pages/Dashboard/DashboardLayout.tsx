@@ -14,7 +14,7 @@ export default function DashboardLayout() {
         <nav className="flex flex-col gap-4">
           <NavLink to="/dashboard" end>Home</NavLink>
           <NavLink to="/dashboard/projects">Projects</NavLink>
-          <NavLink to="/dashboard/">collaboration</NavLink>
+          <NavLink to="/dashboard/collaboration">collaboration</NavLink>
           <NavLink to="/dashboard/settings">Settings</NavLink>
         </nav>
       </div>
