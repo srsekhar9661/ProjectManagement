@@ -14,6 +14,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import ProjectDetails from "./pages/Dashboard/ProjectDetails";
 import Settings from "./pages/Dashboard/Settings";
 import Collaboration from "./pages/Dashboard/Collaboration";
+import TaskDetails from "./pages/Dashboard/TaskDetail";
 
 function App() {
 
@@ -37,6 +38,7 @@ function App() {
             <Route path="projects/:id" element={<ProjectDetails />} />
             <Route path='settings' element={<Settings />} />
             <Route path="collaboration" element={<Collaboration />} />
+            <Route path="tasks/:taskId" element={<TaskDetails />} />
         </Route>
       </Routes>
     </div>
