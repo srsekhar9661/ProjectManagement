@@ -58,7 +58,7 @@ export default function DashboardHome() {
   }, []);
 
   return (
-    <div className="space-y-8 flex-1 overflow-y-scroll w-full">
+    <div className="space-y-8 flex-1 overflow-y-auto w-full  ">
 
       {/* 🔷 Welcome Section */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded-lg shadow">

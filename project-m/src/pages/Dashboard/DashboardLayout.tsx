@@ -20,7 +20,7 @@ export default function DashboardLayout() {
       </div>
 
       {/* 🔷 Main Content */}
-      <div className="flex-1 overflow-y-auto p-6 w-full">
+      <div className="flex-1 overflow-y-auto p-6 w-full scrollbar-thin scrollbar-thumb-violet-500 scrollbar-track-gray-200">
         
 
         <Outlet />
