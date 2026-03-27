@@ -43,9 +43,9 @@ export default function Login() {
           if ( inviteToken){
             localStorage.removeItem('invite_token')
             navigate(`/accept-invite/${inviteToken}`)
-          } else {
-            navigate('/dashboard')
-          }
+          } 
+        } else {
+          navigate('/dashboard')
         }
         
 
@@ -86,7 +86,7 @@ export default function Login() {
           </h2>
           
           {/* displaying this message if there is a redirection to accepting into the project */}
-          { redirect  && 
+          { redirect === 'invite'  && 
             <div className="text-center text-red-500 text-sm py-2">
                 You are required to login, to join the project
             </div>
