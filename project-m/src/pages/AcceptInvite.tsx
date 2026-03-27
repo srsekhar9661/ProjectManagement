@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import API from "../api";
+import { AxiosError } from "axios";
 
 type InviteProp = {
     email : string,
@@ -36,14 +37,16 @@ export default function AcceptInvite() {
                 localStorage.setItem("invite_token", token);
                 navigate(`/login?redirect=invite`);
                 return;
-                }
+            }
+            
             await API.post(`accept-invite/${token}/`);
 
             alert("Joined project ✅");
             navigate("/dashboard");
 
         } catch (err) {
-            alert(err.response?.data?.error);
+            const error = err as AxiosError
+            alert(error.response?.data?.error);
         }
     };
 

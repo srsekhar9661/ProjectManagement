@@ -15,8 +15,11 @@ export default function ProjectDetails() {
   const location = useLocation()
   const navigate = useNavigate()
 
+  const [members, setMembers] = useState([])
+
   // 🔹 Role (mock for now)
-  const [role, setRole] = useState<"owner" | "admin" | "member">("owner");
+  // const [role, setRole] = useState<"owner" | "admin" | "member">("owner");
+  const role = 'owner'
 
   // 🔹 Project
   const [project, setProject] = useState<any>(null);
@@ -42,32 +45,18 @@ export default function ProjectDetails() {
 
   // 🔹 Dummy Load
   useEffect(() => {
+    
+    // Retrieving the project details
     API.get(`projects/${id}/`).then(res => setProject(res.data))
+    
+    // Retrieving the project tasks details
     API.get(`projects/${id}/tasks/`).then(res => setTasks(res.data))
 
-    // Dummy Data
-    // setProject({
-    //   id,
-    //   name: "Project Alpha",
-    //   description: "This is a sample project",
-    // });
+    // Retrieving the project members
+    API.get(`projects/${id}/members/`)
+      .then(res => setMembers(res.data))
+      .catch(err => console.log(err));
 
-    // setTasks([
-    //   {
-    //     id: 1,
-    //     title: "Setup Backend",
-    //     description: "Initialize Django project",
-    //     status: "progress",
-    //     assigned_to: "Ravi",
-    //   },
-    //   {
-    //     id: 2,
-    //     title: "Design UI",
-    //     description: "Create dashboard UI",
-    //     status: "pending",
-    //     assigned_to: "Raja",
-    //   },
-    // ]);
   }, [id]);
 
   // 🔹 Create Task
@@ -418,6 +407,33 @@ export default function ProjectDetails() {
           </div>
         </div>
       )}
+
+      <div className="bg-white p-5 rounded shadow">
+        <h2 className="text-lg font-semibold mb-3">Team Members</h2>
+
+        {members.length === 0 ? (
+          <p className="text-gray-500">No members yet</p>
+        ) : (
+          <div className="space-y-2">
+            {members.map((member) => (
+              <div
+                key={member.id}
+                className="flex justify-between items-center border p-2 rounded"
+              >
+                <div>
+                  <p className="font-medium">{member.name}</p>
+                  <p className="text-sm text-gray-500">{member.email}</p>
+                </div>
+
+                <span className="text-xs bg-gray-200 px-2 py-1 rounded">
+                  {member.role}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
     </div>
   );
 }

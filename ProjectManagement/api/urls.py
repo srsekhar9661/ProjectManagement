@@ -24,4 +24,5 @@ urlpatterns = [
     path('projects/<int:project_id>/invite/', v.invite_user),
     path('accept-invite/<uuid:token>/', v.accept_invite),
     path('invite-details/<uuid:token>/', v.get_invite_details),
+    path('projects/<int:project_id>/members/', v.get_project_members),
 ]

@@ -97,3 +97,10 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ProjectMemberSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='user.username')
+    email = serializers.CharField(source='user.email')
+
+    class Meta:
+        model = m.ProjectMembership
+        fields = ['id', 'name', 'email', 'role']

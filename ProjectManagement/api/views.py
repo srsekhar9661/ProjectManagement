@@ -215,10 +215,12 @@ Click here to join:
         return Response({'error': 'Error sending mail'}, status=500)
     
 
+from ipdb import set_trace as st
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def accept_invite(request, token):
+    # st(context=15)
     try:
         invitation = m.ProjectInvitation.objects.get(token=token)
     except m.ProjectInvitation.DoesNotExist:
@@ -234,7 +236,7 @@ def accept_invite(request, token):
         return Response({'error': 'Email does not match invite'}, status=403)
 
     # Add user to project
-    m.ProjectMember.objects.create(
+    m.ProjectMembership.objects.create(
         user=user,
         project=invitation.project,
         role=invitation.role
@@ -259,3 +261,24 @@ def get_invite_details(request, token):
         "role": invite.role,
         "is_accepted": invite.is_accepted
     })
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_project_members(request, project_id):
+    # st(context=15)
+    project = get_object_or_404(m.Project, id=project_id)
+
+    is_member = m.ProjectMembership.objects.filter(
+        # user=request.user,
+        project=project
+    ).exists()
+
+    if not is_member:
+        return Response({'error':"Not allowed"}, status=403)
+    
+    members = m.ProjectMembership.objects.filter(project=project)
+    serializer = s.ProjectMemberSerializer(members, many=True)
+    return Response(serializer.data)
+

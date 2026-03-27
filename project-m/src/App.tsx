@@ -1,5 +1,3 @@
-import { useState, useEffect } from "react";
-import API from "./api";
 import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/Home";
 import Signup from "./auth/Signup";
