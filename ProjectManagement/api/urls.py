@@ -21,4 +21,7 @@ urlpatterns = [
     path('get-task-detail/<int:id>/', v.get_task_detail),
     path('tasks/<int:task_id>/add-comment/', v.add_comments),
     path('get-collaboration-projects/', v.get_collaboration_projects),
+    path('projects/<int:project_id>/invite/', v.invite_user),
+    path('accept-invite/<uuid:token>/', v.accept_invite),
+    path('invite-details/<uuid:token>/', v.get_invite_details),
 ]

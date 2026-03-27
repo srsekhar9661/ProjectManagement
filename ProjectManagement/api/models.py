@@ -90,3 +90,17 @@ class Attachment(models.Model):
     def __str__(self):
         return self.file.name
     
+
+
+import uuid
+
+class ProjectInvitation(models.Model):
+    email = models.EmailField()
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='invitations')
+    role = models.CharField(max_length=10, default='member')
+    
+    token = models.UUIDField(default=uuid.uuid4, unique=True)
+    is_accepted = models.BooleanField(default=False)
+
+    created_by = models.DateTimeField(auto_now_add=True)
+

@@ -33,7 +33,15 @@ export default function Login() {
 
         // alert("Login successful 🎉");
 
-        navigate("/dashboard");
+        // check invite token from the localStorage
+        const inviteToken = localStorage.getItem('invite_token')
+        if ( inviteToken){
+          localStorage.removeItem('invite_token')
+          navigate(`/accept-invite/${inviteToken}`)
+        } else {
+          navigate('/dashboard')
+        }
+        
 
     } catch (err) {
         alert("Invalid credentials ❌");

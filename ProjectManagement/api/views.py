@@ -7,6 +7,9 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from api import models as m
 from api import serializers as s
+from django.conf import settings
+from django.core.mail import send_mail
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -169,3 +172,90 @@ def get_collaboration_projects(request):
     serializer = ProjectSerializer(projects, many=True)
     return Response(serializer.data)
 
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def invite_user(request, project_id):
+    email = request.data.get('email')
+    role = request.data.get('role', 'member')
+
+    try:
+        project = m.Project.objects.get(id=project_id)
+    except m.Project.DoesNotExist:
+        return Response({'error': 'Project not found'}, status=404)
+
+    invitation = m.ProjectInvitation.objects.create(
+        email=email,
+        project=project,
+        role=role
+    )
+
+    # 🔥 IMPORTANT: FRONTEND URL (NOT Django URL)
+    invite_link = f'http://localhost:5173/accept-invite/{invitation.token}'
+
+    try:
+        send_mail(
+            subject='Project Invitation',
+            message=f'''
+You are invited to join the project: {project.name}
+
+Click here to join:
+{invite_link}
+''',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email],
+            fail_silently=False
+        )
+
+        return Response({'msg': 'Mail successfully sent'})
+
+    except Exception as e:
+        print("EMAIL ERROR:", e)
+        return Response({'error': 'Error sending mail'}, status=500)
+    
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def accept_invite(request, token):
+    try:
+        invitation = m.ProjectInvitation.objects.get(token=token)
+    except m.ProjectInvitation.DoesNotExist:
+        return Response({'error': 'Invalid invite'}, status=404)
+
+    if invitation.is_accepted:
+        return Response({'error': 'Already used'}, status=400)
+
+    user = request.user
+
+    # 🔐 EMAIL MATCH CHECK
+    if user.email != invitation.email:
+        return Response({'error': 'Email does not match invite'}, status=403)
+
+    # Add user to project
+    m.ProjectMember.objects.create(
+        user=user,
+        project=invitation.project,
+        role=invitation.role
+    )
+
+    invitation.is_accepted = True
+    invitation.save()
+
+    return Response({'msg': 'Joined project successfully'})
+
+
+@api_view(['GET'])
+def get_invite_details(request, token):
+    try:
+        invite = m.ProjectInvitation.objects.get(token=token)
+    except m.ProjectInvitation.DoesNotExist:
+        return Response({"error": "Invalid invite"}, status=404)
+
+    return Response({
+        "email": invite.email,
+        "project_name": invite.project.name,
+        "role": invite.role,
+        "is_accepted": invite.is_accepted
+    })

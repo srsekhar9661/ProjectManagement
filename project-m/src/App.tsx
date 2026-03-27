@@ -15,6 +15,7 @@ import ProjectDetails from "./pages/Dashboard/ProjectDetails";
 import Settings from "./pages/Dashboard/Settings";
 import Collaboration from "./pages/Dashboard/Collaboration";
 import TaskDetails from "./pages/Dashboard/TaskDetail";
+import AcceptInvite from "./pages/AcceptInvite";
 
 function App() {
 
@@ -40,6 +41,7 @@ function App() {
             <Route path="collaboration" element={<Collaboration />} />
             <Route path="tasks/:taskId" element={<TaskDetails />} />
         </Route>
+        <Route path="/accept-invite/:token" element={<AcceptInvite />} />
       </Routes>
     </div>
   );

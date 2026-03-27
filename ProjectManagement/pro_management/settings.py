@@ -149,3 +149,17 @@ SIMPLE_JWT = {
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'srsekhar9661@gmail.com'  # Replace with your Gmail
+EMAIL_HOST_PASSWORD = 'xaap jaiw dvwd ntwe'  
+# from decouple import config
+# EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')       # Gmail App Password (see step 2)
+DEFAULT_FROM_EMAIL = 'RajaTechSol <srsekhar9661@gmail.com>'
+# DEFAULT_FROM_EMAIL = 'SkillSmith Institute <srsekhar9661@gmail.com>'
+

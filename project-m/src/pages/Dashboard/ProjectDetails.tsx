@@ -103,11 +103,20 @@ export default function ProjectDetails() {
 
   // 🔹 Invite User
   const inviteUser = async () => {
-    // await API.post(`projects/${id}/invite/`, inviteData)
+    try {
+      const res = await API.post(`projects/${id}/invite/`, inviteData);
 
-    console.log("Inviting:", inviteData);
-    setShowInviteModal(false);
-    setInviteData({ email: "", role: "member" });
+      console.log(res.data);
+
+      alert("Invitation sent successfully ✅");
+
+      setShowInviteModal(false);
+      setInviteData({ email: "", role: "member" });
+
+    } catch (err) {
+      console.log(err);
+      alert("Error sending invite ❌");
+    }
   };
 
   const getStatusColor = (status: string) => {
