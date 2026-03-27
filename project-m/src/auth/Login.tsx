@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import API from "../api";
 import { useNavigate } from "react-router-dom";
 
@@ -10,6 +10,10 @@ export default function Login() {
   });
   const navigate = useNavigate()
   const [error, setError] = useState('')
+  // const { redirect } = useParams()
+  const location = useLocation()
+  const params = new URLSearchParams(location.search)
+  const redirect = params.get('redirect')
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -33,13 +37,15 @@ export default function Login() {
 
         // alert("Login successful 🎉");
 
-        // check invite token from the localStorage
-        const inviteToken = localStorage.getItem('invite_token')
-        if ( inviteToken){
-          localStorage.removeItem('invite_token')
-          navigate(`/accept-invite/${inviteToken}`)
-        } else {
-          navigate('/dashboard')
+        if ( redirect == 'invite' ) {
+          // check invite token from the localStorage
+          const inviteToken = localStorage.getItem('invite_token')
+          if ( inviteToken){
+            localStorage.removeItem('invite_token')
+            navigate(`/accept-invite/${inviteToken}`)
+          } else {
+            navigate('/dashboard')
+          }
         }
         
 
@@ -78,6 +84,14 @@ export default function Login() {
           <h2 className="text-xl font-semibold text-center mb-6">
             Login
           </h2>
+          
+          {/* displaying this message if there is a redirection to accepting into the project */}
+          { redirect  && 
+            <div className="text-center text-red-500 text-sm py-2">
+                You are required to login, to join the project
+            </div>
+          }
+          
           {error && <p className="text-red-500 text-center">{error}</p> }
 
           <form onSubmit={handleSubmit} className="space-y-5">

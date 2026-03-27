@@ -15,41 +15,43 @@ export default function AcceptInvite() {
 
   const [invite, setInvite] = useState<InviteProp>();
 
-  // 🔹 Check auth
-  const isAuthenticated = !!localStorage.getItem("access");
-
+  
   useEffect(() => {
-    if (!isAuthenticated) {
-      // 🔥 Save token and redirect
-      localStorage.setItem("invite_token", token);
-      navigate(`/login?redirect=invite`);
-      return;
-    }
-
-    // 🔹 Fetch invite details
-    API.get(`invite-details/${token}/`)
+      
+      // 🔹 Fetch invite details
+      API.get(`invite-details/${token}/`)
       .then(res => setInvite(res.data))
       .catch(() => alert("Invalid invite"));
+      
+    }, [token]);
+    
+    const handleAccept = async () => {
+        try {
+            // 🔹 Check auth
+            const isAuthenticated = !!localStorage.getItem("access");
 
-  }, [token]);
+            // login is required before adding  memeber to the project, if the user not logged in it will redirect to the login page
+            if (!isAuthenticated) {
+                // 🔥 Save token and redirect
+                localStorage.setItem("invite_token", token);
+                navigate(`/login?redirect=invite`);
+                return;
+                }
+            await API.post(`accept-invite/${token}/`);
 
-  const handleAccept = async () => {
-    try {
-      await API.post(`accept-invite/${token}/`);
+            alert("Joined project ✅");
+            navigate("/dashboard");
 
-      alert("Joined project ✅");
-      navigate("/dashboard");
-
-    } catch (err) {
-      alert(err.response?.data?.error);
-    }
-  };
+        } catch (err) {
+            alert(err.response?.data?.error);
+        }
+    };
 
   if (!invite) return <p>Loading...</p>;
 
   return (
     <div className="h-screen w-screen flex justify-center items-center  ">
-      <div className="bg-white p-6 rounded-xl shadow border-2 shadow-lg  ">
+      <div className="bg-white p-6 rounded-xl shadow border-2 shadow-lg w-50 ">
 
         <h2 className="text-xl font-bold mb-4 text-center">Project Invitation</h2>
 
@@ -78,7 +80,7 @@ export default function AcceptInvite() {
         </div>
         <div className="text-smokewhite text-sm my-4">
             <b>Note:</b>
-            <p className="text-gray-500 text-sm">You are required to have an account with in this application.</p>
+            <p className="text-gray-500 text-sm">You are required to have an account with in this application with the same mail as above.</p>
 
         </div>
       </div>
