@@ -118,7 +118,7 @@ from api.serializers import UserSerializer, TaskSerializer
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_info(request):
-    data = UserSerializer(request.user)
+    data = s.UserDetailSerializer(request.user)
     return Response(data.data, status=200)
 
 @api_view(["GET"])

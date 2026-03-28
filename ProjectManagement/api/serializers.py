@@ -62,6 +62,13 @@ class LoginSerializer(serializers.Serializer):
         data['user'] = user
         return data
 
+class UserDetailSerializer(serializers.ModelSerializer):
+    organization = serializers.CharField(source='profile.organization_name')
+
+    class Meta:
+        model = User
+        fields = [ 'id', 'username', 'email', 'organization']
+
 
 class UserModelSerializer(serializers.ModelSerializer):
     class Meta:

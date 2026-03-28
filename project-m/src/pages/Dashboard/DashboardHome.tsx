@@ -1,8 +1,17 @@
 import { useEffect, useState } from "react";
 import API from "../../api";
 
+
+type UserDetail = {
+  id:number,
+  username:string,
+  email:string,
+  organization:string
+}
+
+
 export default function DashboardHome() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<UserDetail>();
   const [tasksl, setTasksl] = useState([])
   const [projects, setProjects] = useState([])
   const [displayProjects, setDisplayProjects] = useState(false)
@@ -19,10 +28,7 @@ export default function DashboardHome() {
     API.get('get-user-info/')
     .then(res=>{
       console.log(res.data)
-      setUser({
-        username:res.data.username,
-        organization:res.data.email,
-      })
+      setUser({...res.data})
     })
     
 

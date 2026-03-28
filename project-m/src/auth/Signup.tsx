@@ -49,7 +49,7 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen w-screen bg-gray-50 flex items-center justify-center px-6">
+    <div className="min-h-screen w-screen bg-gray-50 flex items-center justify-center px-6 flex-1 overflow-y-auto">
       
       <div className="max-w-6xl w-full grid md:grid-cols-2 gap-10 items-center">
         
