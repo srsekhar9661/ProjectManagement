@@ -55,9 +55,9 @@ export default function Login() {
     };
 
   return (
-    <div className="h-screen w-screen bg-gray-50 flex items-center justify-center px-6">
+    <div className="h-screen w-screen bg-gray-50 flex items-center justify-center p-6">
       
-      <div className="max-w-5xl w-full grid md:grid-cols-2 gap-10 items-center">
+      <div className="max-w-5xl w-full grid md:grid-cols-2 gap-10 ">
         
         {/* 🔷 LEFT SIDE */}
         <div>

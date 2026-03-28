@@ -18,7 +18,7 @@ import AcceptInvite from "./pages/AcceptInvite";
 function App() {
 
   return (
-    <div className="">
+    <div className="overflow-y-auto">
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/home" element={<HomePage />} />
