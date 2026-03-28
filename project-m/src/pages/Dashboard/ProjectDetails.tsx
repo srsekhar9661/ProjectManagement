@@ -12,12 +12,25 @@ type Task = {
   assigned_to?: string;
 };
 
+type UserData = {
+  id:number;
+  username:string;
+  email:string;
+}
+
+type ProjectMember = {
+  id:number;
+  user:UserData;
+  role:string;
+  joined_at:string;
+}
+
 export default function ProjectDetails() {
   const { id } = useParams();
   const location = useLocation()
   const navigate = useNavigate()
 
-  const [members, setMembers] = useState([])
+  const [members, setMembers] = useState<ProjectMember[]>([])
 
   // 🔹 Role (mock for now)
   // const [role, setRole] = useState<"owner" | "admin" | "member">("owner");
@@ -278,53 +291,60 @@ export default function ProjectDetails() {
             </thead>
 
             <tbody>
-              {tasks.map((task) => (
-                <tr key={task.id} className="border-t">
-                  <td className="p-3"><NavLink to={`/dashboard/tasks/${task.id}`}>{ task.title }</NavLink></td>
-                  <td className="p-3">{task.assigned_to}</td>
-                  <td className="p-3">
-                    <span className={`px-2 py-1 text-xs rounded ${getStatusColor(task.status)}`}>
-                      {task.status}
-                    </span>
-                  </td>
-
-                  <td className="p-3 space-x-2 flex flex-row gap-1 justify-between px-[1rem]">
-                    {(role === "member" || role === 'owner' || role == 'admin' ) && (
-                      <>
-                      <button
-                        disabled={task.status === "done"}
-                        onClick={() => completeTask(task.id)}
-                        className={`${
-                          task.status === "done" ? "text-gray-400" : "text-green-600"
-                        }`}
-                      >
-                        Complete
-                      </button>
-                      <NavLink to={`/dashboard/tasks/${task.id}`} className="text-blue-500">View</NavLink>
-                      </>
-                    )}
-
-                    {(role === "owner" || role === "admin" ) && (
-                      <>
-                         <button
-                          onClick={() => setEditingTask(task)}
-                          className="text-blue-600"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => deleteTask(task.id)}
-                          className="text-red-600"
-                        >
-                          Delete
-                        </button>
-                      </>
-                    )}
-
-                    
-                  </td>
+              { tasks.length === 0 ? (
+                <tr>
+                  <td  colSpan={4} className="text-center">No tasks yet</td>
                 </tr>
-              ))}
+              ) : (
+                tasks.map((task) => (
+                  <tr key={task.id} className="border-t">
+                    <td className="p-3"><NavLink to={`/dashboard/tasks/${task.id}`}>{ task.title }</NavLink></td>
+                    <td className="p-3">{task.assigned_to}</td>
+                    <td className="p-3">
+                      <span className={`px-2 py-1 text-xs rounded ${getStatusColor(task.status)}`}>
+                        {task.status}
+                      </span>
+                    </td>
+  
+                    <td className="p-3 space-x-2 flex flex-row gap-1 justify-between px-[1rem]">
+                      {(role === "member" || role === 'owner' || role == 'admin' ) && (
+                        <>
+                        <button
+                          disabled={task.status === "done"}
+                          onClick={() => completeTask(task.id)}
+                          className={`${
+                            task.status === "done" ? "text-gray-400" : "text-green-600"
+                          }`}
+                        >
+                          Complete
+                        </button>
+                        <NavLink to={`/dashboard/tasks/${task.id}`} className="text-blue-500">View</NavLink>
+                        </>
+                      )}
+  
+                      {(role === "owner" || role === "admin" ) && (
+                        <>
+                           <button
+                            onClick={() => setEditingTask(task)}
+                            className="text-blue-600"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => deleteTask(task.id)}
+                            className="text-red-600"
+                          >
+                            Delete
+                          </button>
+                        </>
+                      )}
+  
+                      
+                    </td>
+                  </tr>
+                ))
+              )
+              }
             </tbody>
           </table>
         </div>
@@ -469,8 +489,8 @@ export default function ProjectDetails() {
                 className="flex justify-between items-center border p-2 rounded"
               >
                 <div>
-                  <p className="font-medium">{member.name}</p>
-                  <p className="text-sm text-gray-500">{member.email}</p>
+                  <p className="font-medium">{member.user.username}</p>
+                  <p className="text-sm text-gray-500">{member.user.email}</p>
                 </div>
 
                 <span className="text-xs bg-gray-200 px-2 py-1 rounded">

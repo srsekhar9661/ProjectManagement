@@ -60,32 +60,41 @@ export default function AcceptInvite() {
 
         <hr />
 
-        {/* Invitation script */}
-        <section className="my-2 text-center p-2">
-            You are invited to join the project, using the mail below
-        </section>
+        { invite.is_accepted ? (
+          <p className="text-green-600 text-center mt-2">
+            Already joined this project
+          </p>
+        ): (
+          <>
+          
+          {/* Invitation script */}
+          <section className="my-2 text-center p-2">
+              You are invited to join the project, using the mail below
+          </section>
 
-        {/* Project detail section */}
-        <section className="p-3 border-xl rounded-xl shadow">
-            <p><b>Project:</b> {invite.project_name}</p>
-            <p><b>Email:</b> {invite.email}</p>
-            <p><b>Role:</b> {invite.role}</p>
-        </section>
+          {/* Project detail section */}
+          <section className="p-3 border-xl rounded-xl shadow">
+              <p><b>Project:</b> {invite.project_name}</p>
+              <p><b>Email:</b> {invite.email}</p>
+              <p><b>Role:</b> {invite.role}</p>
+          </section>
 
-        <div className="flex justify-center">
+          <div className="flex justify-center">
 
-        <button
-          onClick={handleAccept}
-          className="bg-blue-600 text-white px-4 py-2 mt-4 "
-        >
-          Accept & Join
-        </button>
-        </div>
-        <div className="text-smokewhite text-sm my-4">
-            <b>Note:</b>
-            <p className="text-gray-500 text-sm">You are required to have an account with in this application with the same mail as above.</p>
+          <button
+            onClick={handleAccept}
+            className="bg-blue-600 text-white px-4 py-2 mt-4 "
+          >
+            Accept & Join
+          </button>
+          </div>
+          <div className="text-smokewhite text-sm my-4">
+              <b>Note:</b>
+              <p className="text-gray-500 text-sm">You are required to have an account with in this application with the same mail as above.</p>
 
-        </div>
+          </div>
+          </>
+        )}
       </div>
     </div>
   );

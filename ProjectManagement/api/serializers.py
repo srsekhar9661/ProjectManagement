@@ -107,7 +107,7 @@ class UserModelSerializer(serializers.ModelSerializer):
 class SafeUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username']  # ✅ ONLY SAFE FIELDS
+        fields = ['id', 'username', 'email']  # ✅ ONLY SAFE FIELDS
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -151,17 +151,15 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class ProjectMemberSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(source='user.username')
-    email = serializers.CharField(source='user.email')
+    user = SafeUserSerializer()
 
     class Meta:
-        # model = m.ProjectMembership
-        fields = ['id', 'name', 'email', 'role']
+        model = m.ProjectMember
+        fields = ['id', 'user', 'role', 'joined_at']
 
+# class ProjectMemberSerializer(serializers.ModelSerializer):
+#     user = UserDetailSerializer()
 
-class ProjectMemberSerializer(serializers.ModelSerializer):
-    user = UserDetailSerializer()
-
-    class Meta:
-        # model = m.ProjectMembership
-        fields = ['id', 'role', 'user']
+#     class Meta:
+#         # model = m.ProjectMembership
+#         fields = ['id', 'role', 'user']

@@ -296,7 +296,7 @@ def upload_attachment(request, task_id):
 def get_collaboration_projects(request):
     user = request.user
     projects = m.Project.objects.filter(
-        membership__user__id = user.id
+        members__user=user
     )
     serializer = ProjectSerializer(projects, many=True)
     return Response(serializer.data)
@@ -349,7 +349,6 @@ from ipdb import set_trace as st
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def accept_invite(request, token):
-    # st(context=15)
     try:
         invitation = m.ProjectInvitation.objects.get(token=token)
     except m.ProjectInvitation.DoesNotExist:
@@ -364,17 +363,26 @@ def accept_invite(request, token):
     if user.email != invitation.email:
         return Response({'error': 'Email does not match invite'}, status=403)
 
-    # Add user to project
-    # m.ProjectMembership.objects.create(
-    #     user=user,
-    #     project=invitation.project,
-    #     role=invitation.role
-    # )
+    # 🔥 CHECK if already member
+    already_member = m.ProjectMember.objects.filter(
+        user=user,
+        project=invitation.project
+    ).exists()
 
+    if not already_member:
+        # ✅ ADD USER TO PROJECT
+        m.ProjectMember.objects.create(
+            user=user,
+            project=invitation.project,
+            role=invitation.role
+        )
+
+    # mark invite accepted
     invitation.is_accepted = True
     invitation.save()
 
     return Response({'msg': 'Joined project successfully'})
+
 
 
 @api_view(['GET'])
@@ -407,7 +415,7 @@ def get_project_members(request, project_id):
 
     if not is_member:
         return Response({'error':"Not allowed"}, status=403)
-    members=None
+    members = m.ProjectMember.objects.filter(project=project)
     # members = m.ProjectMembership.objects.filter(project=project)
     serializer = s.ProjectMemberSerializer(members, many=True)
     return Response(serializer.data)
