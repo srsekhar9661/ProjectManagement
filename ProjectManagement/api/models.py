@@ -20,20 +20,23 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
-ROLES = [
-    ('admin', 'admin'),
-    ('member', 'Member'),
-    # ('developer', 'developer'),
-]
 
-class ProjectMembership(models.Model):
+
+class ProjectMember(models.Model):
+    ROLE_CHOICES = [
+        ('owner', 'Owner'),
+        ('admin', 'admin'),
+        ('member', 'member')
+    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='membership')
-    role = models.CharField(max_length=50, choices=ROLES, default='member')
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='members')
+    role = models.CharField(choices=ROLE_CHOICES, max_length=10)
+    joined_at=models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.user.username} - {self.project.name}'
-    
+        return f"{self.user.username} - {self.project.name} ({self.role})"
+
+ 
 
 class Task(models.Model):
     STATUS_CHOICES = [

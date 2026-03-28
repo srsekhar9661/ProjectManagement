@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view, permission_classes
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from api.models import Project, ProjectMembership, Task
+from api.models import Project, Task
 from api.serializers import ProjectSerializer, UserSerializer, LoginSerializer
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -21,10 +21,13 @@ def get_projects(request):
 # 🔹 Create project
 @api_view(['POST'])
 def create_project(request):
-    serializer = ProjectSerializer(data=request.data)
+    serializer = ProjectSerializer(
+        data=request.data,
+        context={'request':request}
+        )
 
     if serializer.is_valid():
-        serializer.save(created_by=request.user)
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -58,6 +61,7 @@ def get_project_detail(request, id):
     # project = get_object_or_404(Project, id=id)
     project = get_object_or_404(Project, id=id)
     serializer = ProjectSerializer(project)
+    print(serializer.data)
     return Response(serializer.data)
 
 
@@ -65,10 +69,11 @@ def get_project_detail(request, id):
 @permission_classes([IsAuthenticated])
 def add_member(request, project_id):
     user_id = request.data.get('user_id')
-    membership, created = ProjectMembership.objects.get_or_create(
-        user_id=user_id,
-        project_id=project_id
-    )
+    # membership, created = ProjectMembership.objects.get_or_create(
+    #     user_id=user_id,
+    #     project_id=project_id
+    # )
+    # membership = pass
     return Response({'message':'User added to project'})
 
 @api_view(['POST'])
@@ -236,11 +241,11 @@ def accept_invite(request, token):
         return Response({'error': 'Email does not match invite'}, status=403)
 
     # Add user to project
-    m.ProjectMembership.objects.create(
-        user=user,
-        project=invitation.project,
-        role=invitation.role
-    )
+    # m.ProjectMembership.objects.create(
+    #     user=user,
+    #     project=invitation.project,
+    #     role=invitation.role
+    # )
 
     invitation.is_accepted = True
     invitation.save()
@@ -270,15 +275,16 @@ def get_project_members(request, project_id):
     # st(context=15)
     project = get_object_or_404(m.Project, id=project_id)
 
-    is_member = m.ProjectMembership.objects.filter(
-        # user=request.user,
-        project=project
-    ).exists()
+    is_member =  True
+    # is_member = m.ProjectMembership.objects.filter(
+    #     # user=request.user,
+    #     project=project
+    # ).exists()
 
     if not is_member:
         return Response({'error':"Not allowed"}, status=403)
-    
-    members = m.ProjectMembership.objects.filter(project=project)
+    members=None
+    # members = m.ProjectMembership.objects.filter(project=project)
     serializer = s.ProjectMemberSerializer(members, many=True)
     return Response(serializer.data)
 

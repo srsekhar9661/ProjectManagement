@@ -5,11 +5,35 @@ from api.models import Profile
 from django.contrib.auth import authenticate
 from api import models as m
 
+
+# class ProjectDetailSerializer(serializers.ModelSerialzier):
+#     role = serializers.SerializersMethodField()
+#     members = serializers.SerializerMethodField()
+
+#     def get_role(self, obj):
+#         user = self.context.get('user')
+#         project = self.context.get('project')
+#         m.ProjectMembership.objects.get()
+#     class Meta:
+#         model = Project
+#         fields = ['id', 'name', 'description', 'created_by', 'role', 'members', 'created_at']
+
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = '__all__'
         read_only_fields = ['created_by']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        project = m.Project.objects.create(
+            created_by=user,
+            **validated_data
+        )
+
+        # Add creator
+        project.members.add(user)
+        return project
 
 
 class UserSerializer(serializers.Serializer):
@@ -109,5 +133,13 @@ class ProjectMemberSerializer(serializers.ModelSerializer):
     email = serializers.CharField(source='user.email')
 
     class Meta:
-        model = m.ProjectMembership
+        # model = m.ProjectMembership
         fields = ['id', 'name', 'email', 'role']
+
+
+class ProjectMemberSerializer(serializers.ModelSerializer):
+    user = UserDetailSerializer()
+
+    class Meta:
+        # model = m.ProjectMembership
+        fields = ['id', 'role', 'user']
