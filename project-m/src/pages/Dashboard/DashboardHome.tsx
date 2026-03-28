@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import API from "../../api";
+import { useNavigate } from "react-router-dom";
 
 
 type UserDetail = {
@@ -21,6 +22,7 @@ export default function DashboardHome() {
     tasks: 0,
     completed: 0
   });
+  const navigate = useNavigate()
 
   useEffect(() => {
     // 🔹 Get user from backend (optional later)
@@ -59,7 +61,11 @@ export default function DashboardHome() {
       console.log('receing response from get-all-tasks/')
       console.log(res.data)
       setTasksl(res.data)
-      setStats(prev => ({...prev, tasks:res.data.length}))
+      setStats(prev => ({
+        ...prev,
+        tasks: res.data.length,
+        completed: res.data.filter(t => t.status === "done").length
+      }));
     })
   }, []);
 
@@ -109,11 +115,17 @@ export default function DashboardHome() {
         </h2>
 
         <div className="flex gap-4 flex-wrap">
-          <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          <button
+            onClick={() => navigate("/dashboard/projects")}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
             + Create Project
           </button>
 
-          <button className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+          <button
+            onClick={() => navigate("/dashboard/projects")}
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          >
             + Add Task
           </button>
         </div>
@@ -170,15 +182,29 @@ export default function DashboardHome() {
 
                       {/* 🔹 Actions */}
                       <td className="p-3 border text-center flex gap-2 justify-between space-x-2">
-                        <button className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600">
+                        <button
+                          onClick={() => navigate(`/dashboard/projects/${item.id}`)}
+                          className="px-3 py-1 text-sm bg-blue-500 text-white rounded"
+                        >
                           View
                         </button>
 
-                        <button className="px-3 py-1 text-sm bg-green-500 text-white rounded hover:bg-green-600">
+                        <button
+                          onClick={() => navigate(`/dashboard/projects`)}
+                          className="px-3 py-1 text-sm bg-green-500 text-white rounded"
+                        >
                           Edit
                         </button>
 
-                        <button className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600">
+                        <button
+                          onClick={async () => {
+                            if (!confirm("Delete project?")) return;
+
+                            await API.delete(`projects/${item.id}/delete/`);
+                            setProjects(prev => prev.filter(p => p.id !== item.id));
+                          }}
+                          className="px-3 py-1 text-sm bg-red-500 text-white rounded"
+                        >
                           Delete
                         </button>
                       </td>
@@ -245,25 +271,39 @@ export default function DashboardHome() {
                       {/* 🔹 Status */}
                       <td className="p-3 border">
                         <span className={`px-2 py-1 text-xs rounded-full 
-                          ${item.completed
+                          ${item.status === "done"
                             ? "bg-green-100 text-green-600"
                             : "bg-gray-100 text-gray-600"
                           }`}>
-                          {item.completed ? "Completed" : "Pending"}
+                          {item.status === 'done' ? "Completed" : "Pending"}
                         </span>
                       </td>
 
                       {/* 🔹 Actions */}
                       <td className="p-3 border text-center flex gap-2 justify-between space-x-2">
-                        <button className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600">
+                        <button
+                          onClick={() => navigate(`/dashboard/tasks/${item.id}`)}
+                          className="px-3 py-1 text-sm bg-blue-500 text-white rounded"
+                        >
                           View
                         </button>
 
-                        <button className="px-3 py-1 text-sm bg-green-500 text-white rounded hover:bg-green-600">
+                        <button
+                          onClick={() => navigate(`/dashboard/tasks/${item.id}`)}
+                          className="px-3 py-1 text-sm bg-green-500 text-white rounded"
+                        >
                           Edit
                         </button>
 
-                        <button className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600">
+                        <button
+                          onClick={async () => {
+                            if (!confirm("Delete task?")) return;
+
+                            await API.delete(`tasks/${item.id}/delete/`);
+                            setTasksl(prev => prev.filter(t => t.id !== item.id));
+                          }}
+                          className="px-3 py-1 text-sm bg-red-500 text-white rounded"
+                        >
                           Delete
                         </button>
                       </td>
