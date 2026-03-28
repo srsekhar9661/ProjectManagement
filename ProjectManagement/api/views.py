@@ -120,14 +120,78 @@ def add_member(request, project_id):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_task(request, project_id):
+    user = request.user
     data = request.data
+
     task = Task.objects.create(
-        title=data['title'],
-        description=data['description'],
+        title=data.get('title'),
+        description=data.get('description', ''),
         project_id=project_id,
-        # assigned_to_id=data.get('assigned_to')
+        created_by=user
     )
-    return Response({'message':'Task created'})
+
+    return Response({
+        'id': task.id,
+        'title': task.title,
+        'description': task.description,
+        'status': task.status
+    })
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_task(request, task_id):
+    try:
+        task = Task.objects.get(id=task_id)
+    except Task.DoesNotExist:
+        return Response({'error': 'Not found'}, status=404)
+
+    # 🔒 Only creator (you can upgrade later with roles)
+    if task.created_by != request.user:
+        return Response({'error': 'Permission denied'}, status=403)
+
+    task.title = request.data.get('title', task.title)
+    task.description = request.data.get('description', task.description)
+
+    task.save()
+
+    return Response({
+        'id': task.id,
+        'title': task.title,
+        'description': task.description,
+        'status': task.status
+    })
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_task(request, task_id):
+    try:
+        task = Task.objects.get(id=task_id)
+    except Task.DoesNotExist:
+        return Response({'error': 'Not found'}, status=404)
+
+    if task.created_by != request.user:
+        return Response({'error': 'Permission denied'}, status=403)
+
+    task.delete()
+    return Response({'message': 'Deleted'}, status=204)
+
+from django.utils import timezone
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def complete_task(request, task_id):
+    try:
+        task = Task.objects.get(id=task_id)
+    except Task.DoesNotExist:
+        return Response({'error': 'Not found'}, status=404)
+
+    task.status = 'done'
+    task.completed_at = timezone.now()
+    task.save()
+
+    return Response({'message': 'Task completed'})
 
 
 @api_view(['GET'])

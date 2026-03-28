@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, NavLink, useLocation, useNavigate } from "react-router-dom";
 import API from "../../api";
+import TaskForm from "../../components/task/TaskForm";
+
 
 type Task = {
   id: number;
@@ -42,6 +44,7 @@ export default function ProjectDetails() {
     email: "",
     role: "member",
   });
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   // 🔹 Dummy Load
   useEffect(() => {
@@ -76,18 +79,30 @@ export default function ProjectDetails() {
 
   // 🔹 Delete Task
   const deleteTask = async (taskId: number) => {
-    // await API.delete(`tasks/${taskId}/`)
+    if (!confirm("Delete this task?")) return;
 
-    setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    try {
+      await API.delete(`tasks/${taskId}/delete/`);
+
+      setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   // 🔹 Complete Task
-  const completeTask = (taskId: number) => {
-    setTasks((prev) =>
-      prev.map((t) =>
-        t.id === taskId ? { ...t, status: "done" } : t
-      )
-    );
+  const completeTask = async (taskId: number) => {
+    try {
+      await API.patch(`tasks/${taskId}/complete/`);
+
+      setTasks((prev) =>
+        prev.map((t) =>
+          t.id === taskId ? { ...t, status: "done" } : t
+        )
+      );
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   // 🔹 Invite User
@@ -213,8 +228,11 @@ export default function ProjectDetails() {
                 {(role === "member" || role === 'owner' || role == 'admin') && (
                   <>
                   <button
+                    disabled={task.status === "done"}
                     onClick={() => completeTask(task.id)}
-                    className="text-green-600"
+                    className={`${
+                      task.status === "done" ? "text-gray-400" : "text-green-600"
+                    }`}
                   >
                     Complete
                   </button>
@@ -224,7 +242,12 @@ export default function ProjectDetails() {
                 {(role === "owner" || role === "admin") && (
                   <>
                     
-                    <button className="text-blue-600">Edit</button>
+                    <button
+                      onClick={() => setEditingTask(task)}
+                      className="text-blue-600"
+                    >
+                      Edit
+                    </button>
                     <button
                       onClick={() => deleteTask(task.id)}
                       className="text-red-600"
@@ -269,8 +292,11 @@ export default function ProjectDetails() {
                     {(role === "member" || role === 'owner' || role == 'admin' ) && (
                       <>
                       <button
+                        disabled={task.status === "done"}
                         onClick={() => completeTask(task.id)}
-                        className="text-green-600"
+                        className={`${
+                          task.status === "done" ? "text-gray-400" : "text-green-600"
+                        }`}
                       >
                         Complete
                       </button>
@@ -280,7 +306,12 @@ export default function ProjectDetails() {
 
                     {(role === "owner" || role === "admin" ) && (
                       <>
-                        <button className="text-blue-600">Edit</button>
+                         <button
+                          onClick={() => setEditingTask(task)}
+                          className="text-blue-600"
+                        >
+                          Edit
+                        </button>
                         <button
                           onClick={() => deleteTask(task.id)}
                           className="text-red-600"
@@ -315,39 +346,27 @@ export default function ProjectDetails() {
             </button>
             <h2 className="mb-4 font-semibold">Create Task</h2>
 
-            <input
-              placeholder="Title"
-              value={taskData.title}
-              onChange={(e) =>
-                setTaskData({ ...taskData, title: e.target.value })
-              }
-              className="border p-2 w-full mb-3"
-            />
-
-            <textarea
-              placeholder="Description"
-              value={taskData.description}
-              onChange={(e) =>
-                setTaskData({ ...taskData, description: e.target.value })
-              }
-              className="border p-2 w-full mb-3"
-            />
-
-            <div className="flex flex-row gap-1">
-
-              <button
-                onClick={createTask}
-                className="bg-blue-600 text-white px-4 py-2 w-full rounded-lg"
-              >
-                Create
-              </button>
-              <button
+            {showTaskModal && (
+              <div
+                className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center"
                 onClick={() => setShowTaskModal(false)}
-                className="bg-gray-300 px-4 py-2 w-full rounded-lg"
               >
-                Cancel
-              </button>
-            </div>
+                <div onClick={(e) => e.stopPropagation()}>
+                  <TaskForm
+                    onSubmit={async (data) => {
+                      const res = await API.post(
+                        `projects/${id}/tasks/create/`,
+                        data
+                      );
+
+                      setTasks((prev) => [...prev, res.data]);
+                      setShowTaskModal(false);
+                    }}
+                    onCancel={() => setShowTaskModal(false)}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -404,6 +423,35 @@ export default function ProjectDetails() {
               Cancel
             </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {editingTask && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center"
+          onClick={() => setEditingTask(null)}
+        >
+          <div onClick={(e) => e.stopPropagation()}>
+            <TaskForm
+              initialData={editingTask}
+              isEdit
+              onSubmit={async (data) => {
+                await API.put(
+                  `tasks/${editingTask.id}/update/`,
+                  data
+                );
+
+                setTasks((prev) =>
+                  prev.map((t) =>
+                    t.id === editingTask.id ? { ...t, ...data } : t
+                  )
+                );
+
+                setEditingTask(null);
+              }}
+              onCancel={() => setEditingTask(null)}
+            />
           </div>
         </div>
       )}
