@@ -81,7 +81,7 @@ class Comment(models.Model)    :
     
 
 def task_file_upload_path(instance, filename):
-    return f"tasks/{instance.task,id}/{filename}"
+    return f"tasks/{instance.task.id}/{filename}"
 
 class Attachment(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='attachments')

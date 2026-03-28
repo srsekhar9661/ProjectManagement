@@ -13,6 +13,7 @@ from django.core.mail import send_mail
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 def get_projects(request):
     projects = Project.objects.filter(created_by=request.user).order_by('-created_at')
     serializer = ProjectSerializer(projects, many=True)
@@ -20,6 +21,7 @@ def get_projects(request):
 
 # 🔹 Create project
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def create_project(request):
     serializer = ProjectSerializer(
         data=request.data,
@@ -31,6 +33,45 @@ def create_project(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_project(request, pk):
+    try:
+        project = Project.objects.get(id=pk)
+    except Project.DoesNotExist:
+        return Response({'error': 'Not found'}, status=404)
+
+    # 🔒 Optional (IMPORTANT): only owner/admin can edit
+    if project.created_by != request.user:
+        return Response({'error': 'Permission denied'}, status=403)
+
+    serializer = ProjectSerializer(project, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+
+    return Response(serializer.errors, status=400)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_project(request, pk):
+    try:
+        project = Project.objects.get(id=pk)
+    except Project.DoesNotExist:
+        return Response({'error': 'Not found'}, status=404)
+
+    # 🔒 Only owner can delete
+    if project.created_by != request.user:
+        return Response({'error': 'Permission denied'}, status=403)
+
+    project.delete()
+    return Response({'message': 'Deleted successfully'}, status=204)
+
 
 @api_view(['POST'])
 def signup(request):
@@ -106,16 +147,16 @@ def get_tasks(request, project_id):
     return Response(data)
 
 
-@api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
-def delete_project(request, id):
-    project = Project.objects.filter(id=id, created_by=request.user).first()
+# @api_view(['DELETE'])
+# @permission_classes([IsAuthenticated])
+# def delete_project(request, id):
+#     project = Project.objects.filter(id=id, created_by=request.user).first()
 
-    if not project:
-        return Response({"error": "Not found"}, status=404)
+#     if not project:
+#         return Response({"error": "Not found"}, status=404)
 
-    project.delete()
-    return Response({"message": "Deleted successfully"})
+#     project.delete()
+#     return Response({"message": "Deleted successfully"})
 
 
 from api.serializers import UserSerializer, TaskSerializer

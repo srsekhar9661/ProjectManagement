@@ -31,8 +31,13 @@ class ProjectSerializer(serializers.ModelSerializer):
             **validated_data
         )
 
-        # Add creator
-        project.members.add(user)
+        # Add creator as owner in ProjectMember
+        m.ProjectMember.objects.create(
+            user=user,
+            project=project,
+            role='owner'
+        )
+        
         return project
 
 

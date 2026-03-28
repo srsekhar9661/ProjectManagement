@@ -13,6 +13,11 @@ export default function Projects() {
   const [view, setView] = useState<"grid" | "table">("table");
   const navigate = useNavigate();
   const [showCreate, setShowCreate] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [editForm, setEditForm] = useState({
+    name: "",
+    description: "",
+  });
 
   const [formData, setFormData] = useState({
     name: "",
@@ -39,9 +44,27 @@ export default function Projects() {
       .catch((err) => console.log(err));
   };
 
-  const handleDelete = async (id: number) => {
+  const handleUpdate = async () => {
+    if (!editingProject) return;
+
     try {
-      await API.delete(`projects/${id}/`);
+      await API.put(
+        `projects/${editingProject.id}/update/`,
+        editForm
+      );
+
+      setEditingProject(null);
+      fetchProjects();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this project?")) return;
+
+    try {
+      await API.delete(`projects/${id}/delete/`);
       fetchProjects();
     } catch (err) {
       console.log(err);
@@ -124,7 +147,44 @@ export default function Projects() {
         </div>
       )}
 
-      
+      {editingProject && (
+        <div className="bg-white p-6 rounded shadow border space-y-4">
+          <h2 className="text-lg font-semibold">Edit Project</h2>
+
+          <input
+            type="text"
+            value={editForm.name}
+            onChange={(e) =>
+              setEditForm({ ...editForm, name: e.target.value })
+            }
+            className="w-full border p-2 rounded"
+          />
+
+          <textarea
+            value={editForm.description}
+            onChange={(e) =>
+              setEditForm({ ...editForm, description: e.target.value })
+            }
+            className="w-full border p-2 rounded"
+          />
+
+          <div className="flex gap-3">
+            <button
+              onClick={handleUpdate}
+              className="bg-blue-600 text-white px-4 py-2 rounded"
+            >
+              Update
+            </button>
+
+            <button
+              onClick={() => setEditingProject(null)}
+              className="bg-gray-300 px-4 py-2 rounded"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 🔷 GRID VIEW */}
       {view === "grid" && (
@@ -163,7 +223,13 @@ export default function Projects() {
                 </button>
 
                 <button
-                  onClick={() => alert("Edit feature coming")}
+                  onClick={() => {
+                    setEditingProject(project);
+                    setEditForm({
+                      name: project.name,
+                      description: project.description,
+                    });
+                  }}
                   className="text-yellow-600 text-sm"
                 >
                   Edit
@@ -230,7 +296,13 @@ export default function Projects() {
                       </button>
 
                       <button
-                        onClick={() => alert("Edit coming")}
+                        onClick={() => {
+                          setEditingProject(project);
+                          setEditForm({
+                            name: project.name,
+                            description: project.description,
+                          });
+                        }}
                         className="text-yellow-600"
                       >
                         Edit
