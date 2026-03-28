@@ -118,9 +118,12 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class AttachmentSerializer(serializers.ModelSerializer):
+    file = serializers.FileField(read_only=True)
+
     class Meta:
         model = m.Attachment
-        fields = ['id', 'title', 'uploaded_at']
+        fields = ['id', 'file', 'uploaded_at']
+
 
 class TaskSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
@@ -128,9 +131,23 @@ class TaskSerializer(serializers.ModelSerializer):
 
     assigned_to = serializers.StringRelatedField()
     created_by = serializers.StringRelatedField()
+
     class Meta:
         model = Task
-        fields = '__all__'
+        fields = [
+            'id',
+            'title',
+            'description',
+            'status',
+            'priority',
+            'due_date',
+            'assigned_to',
+            'created_by',
+            'comments',
+            'attachments',
+            'created_at',
+            'updated_at'
+        ]
 
 
 class ProjectMemberSerializer(serializers.ModelSerializer):

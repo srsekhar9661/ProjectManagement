@@ -271,6 +271,25 @@ def add_comments(request, task_id):
     serializer = s.CommentSerializer(comment)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def upload_attachment(request, task_id):
+    task = get_object_or_404(m.Task, id=task_id)
+
+    file = request.FILES.get('file')
+
+    if not file:
+        return Response({'error': 'File required'}, status=400)
+
+    attachment = m.Attachment.objects.create(
+        task=task,
+        file=file,
+        upload_by=request.user
+    )
+
+    serializer = s.AttachmentSerializer(attachment)
+    return Response(serializer.data, status=201)
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
