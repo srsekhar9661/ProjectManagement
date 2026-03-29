@@ -31,4 +31,7 @@ urlpatterns = [
     path('invite-details/<uuid:token>/', v.get_invite_details),
     path('projects/<int:project_id>/members/', v.get_project_members),
     # path('tasks/<int:task_id>/upload/', v.upload_attachment),
+    path('user/me/', v.get_user_profile),
+    path('user/update/', v.update_profile),
+    path('user/change-password/', v.change_password),
 ]

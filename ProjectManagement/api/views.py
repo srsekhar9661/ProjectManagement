@@ -420,3 +420,49 @@ def get_project_members(request, project_id):
     serializer = s.ProjectMemberSerializer(members, many=True)
     return Response(serializer.data)
 
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_profile(request):
+    user = request.user
+
+    user.username = request.data.get('name', user.username)
+    user.email = request.data.get('email', user.email)
+    user.save()
+
+    profile, _ = m.Profile.objects.get_or_create(user=user)
+    profile.organization_name = request.data.get('organization', profile.organization_name)
+    profile.save()
+
+    return Response({'msg': 'Profile updated'})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    user = request.user
+
+    if not user.check_password(request.data.get('current')):
+        return Response({'error': 'Wrong password'}, status=400)
+
+    user.set_password(request.data.get('new'))
+    user.save()
+
+    return Response({'msg': 'Password updated'})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_profile(request):
+    user = request.user
+
+    return Response({
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "phone": getattr(user.profile, 'phone', ''),
+        "bio": getattr(user.profile, 'bio', ''),
+        "organization": getattr(user.profile, 'organization_name', '')
+    })
+
+
